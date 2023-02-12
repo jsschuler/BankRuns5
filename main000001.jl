@@ -89,7 +89,13 @@ distribution::String
 if distribution=="Gamma"
     dist=Gamma(distributionParams[1],distributionParams[2])
 else
-    dist=Levy(distributionParams[1],distributionParams[2])
+    rawDist=Levy(distributionParams[1],distributionParams[2])
+    # we want the to allow values no greater than 10000 times the first percentile 
+    base::Float64=quantile(rawDist,.01)
+    top::Float64=10000*base
+    dist=truncated(rawDist,0,top)
+
+
 end
 
 # also, what type of Graph is used?

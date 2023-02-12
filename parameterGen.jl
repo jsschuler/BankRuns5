@@ -95,8 +95,7 @@ col14=[]
         push!(col9,sample(graphParamB,1)[1])
         push!(col10,sample(exogP,1)[1])
         push!(col11,sample(depth,1)[1])
-        #push!(col12,sample(["Gamma","Levy"],1)[1])
-        push!(col12,sample(["Gamma"],1)[1])
+        push!(col12,sample(["Gamma","Levy"],1)[1])
         push!(col13,sample(.5:.5:20,1)[1])
         push!(col14,sample(.5:.5:20,1)[1])
     end

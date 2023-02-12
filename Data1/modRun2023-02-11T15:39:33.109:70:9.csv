@@ -1,2 +1,0 @@
-dateTime,seed1,seed2,key,agtCnt,withdrawalPeriods,reserveRatio,loP,hiP,depositParam,graphType,graphParamA,graphParamB,exogP,depth,distributionType,distributionParamA,distributionParamB,complete
-2023-02-11T15:39:33.109,70,9,2023-02-11T15:39:33.109:70:9,30,1,0.1,0.01,0.1,7.0,Watts,0.15,0.15,0.03,10000,Gamma,16.0,15.5,false
