@@ -128,15 +128,14 @@ end
 # function to generate the agents according to the parameters
 function agtGen()
     global agtTicker
-    agtTicker=agtTicker+1
+    #agtTicker=agtTicker+1
     dep=distGen()
     dep::Int64
     p=probGen()
     p::Float64
-    currAgt=Agent(agtTicker,dep,p,true)
+    currAgt=Agent(0,dep,p,true)
     currAgt::Agent
     push!(agtList,currAgt)
-    agtWrite(currAgt)
 end
 # we need another agent generation function for agents to use for the initial decision
 # function to generate the agents according to the parameters
@@ -155,7 +154,7 @@ end
 function graphGen()
     global graphParams
     global graphType
-    global agtCnt
+    global agtList 
     #println("Check")
     #println(agtCnt)
     #println(floor(Int64,graphParams[1]*agtCnt))
@@ -171,7 +170,7 @@ function graphGen()
     elseif graphType=="Erdos"
         graph=erdos_renyi(agtCnt, floor(Int64,graphParams[1]*agtCnt))
     else
-        graph=complete_graph(agtCnt)
+        graph=complete_graph(length(agtList))
     end
     return graph
 end

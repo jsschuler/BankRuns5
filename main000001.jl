@@ -106,17 +106,41 @@ end
 
 # now, the agents need to decide if they will bank 
 empiricalProb=Float64[]
+bestBoolList::Array{Bool}=repeat([false],length(agtList))
+minDelta::Float64=1.0
 for bankProb in 0.05:0.05:1
     bankingCount::Int64=0
+    tmpBool=Bool[]
     for agt in agtList
+        println("Simulating")
         wdPct=initSimulate(agt,bankProb)
         if wdPct < agt.p 
             bankingCount=bankingCount+1
+            push!(tmpBool,true)
+        else
+            push!(tmpBool,false)
         end
     end
-    push!(empiricalProb,bankingCount/length(agtList))
+    currProb=bankingCount/length(agtList)    
+    push!(empiricalProb,currProb)
+    if abs(currProb-bankProb) < minDelta
+        bestBoolList=tmpBool
+    end
 end
 exit()
+for i in 1:length(bestBoolList)
+    if !bestBoolList[i]
+        deleteat!(agtList,i)
+    end
+end
+
+# now record agents 
+postDecisionTicker::Int64=0
+for agt in agtList
+    postDecisionTicker=postDecisionTicker+1
+    agt.idx=postDecisionTicker
+    agtWrite(agt)
+end
 
 
 theGraph=graphGen()
