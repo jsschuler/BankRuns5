@@ -103,6 +103,7 @@ end
 graphType=argVec[11]
 graphParams=[argVec[12],argVec[13]]
 
+neighborDepth=argVec[14]
 # and a list of all agents
 agtList=Agent[]
 # generate agents
