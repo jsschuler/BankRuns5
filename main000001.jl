@@ -1,7 +1,7 @@
 ################################################################################
 #              Replacement Bank Run Model                                      #
 #               (networked)                                                    #
-#               June 2022                                                      #
+#               August 2023                                                    #
 #               John S. Schuler                                                #
 #               Main Control Code                                              #
 ################################################################################
@@ -19,14 +19,17 @@ using Dates
 # it also loads a progresss log so it can drop already run model versions.
 # each parameterization (INCLUDING THE SEED) defines a model and is thus the
 # model key
-#println("Threads")
-#println(Threads.nthreads())
+println("Threads")
+println(Threads.nthreads())
 
-dataDir="Data1"
-include("objects.jl")
-include("functions.jl")
+dataDir="BankRunData"
+
+
+
+
 # load control file
-ctrlFile=ARGS[1]
+#ctrlFile=ARGS[1]
+ctrlFile="runCtrl_20230831191053.jld2"
 #println(ctrlFile)
 ctrlFrame=load_object(ctrlFile)
 #println(ctrlFrame[1:10,:])
@@ -35,8 +38,6 @@ ctrlWorking=ctrlFrame[ctrlFrame[:,"complete"].==false,:]
 
 # find the first row of the control df that is not complete
 argVec=ctrlWorking[1,:]
-
-
 
 # parse the argVec for the model parameters
 # key to identify the model
@@ -94,9 +95,27 @@ else
     base::Float64=quantile(rawDist,.01)
     top::Float64=10000*base
     dist=truncated(rawDist,0,top)
-
-
 end
+
+# now from the distribution, determine the cut off for deposit depositInsurance
+# if the deposit insurance is infinite, we set it to the largest agent deposit 
+
+
+depositInsurance::UInt64=round(UInt64,quantile(dist,argVec[20]))
+failurePay::UInt64=UInt64(0)
+
+
+include("objects.jl")
+
+# we need to record any agent who breaks the bank
+bankBreaker::Union{Nothing,Agent}=nothing
+# and to record how much the bank was able to pay out 
+failurePay::UInt64=0
+
+
+include("functions3.jl")
+
+
 
 # also, what type of Graph is used?
 
@@ -113,9 +132,11 @@ end
 
 # now, the agents need to decide if they will bank 
 empiricalProb=Float64[]
-bestBoolList::Array{Bool}=repeat([false],length(agtList))
+bestBoolList::Array{Array{Bool}}=Array{Bool}[]
 minDelta::Float64=1.0
-for bankProb in 0.05:0.05:1
+theorProbs=collect(0.05:0.05:1)
+
+for bankProb in theorProbs
     bankingCount::Int64=0
     tmpBool=Bool[]
     for agt in agtList
@@ -128,18 +149,34 @@ for bankProb in 0.05:0.05:1
             push!(tmpBool,false)
         end
     end
+    push!(bestBoolList,tmpBool)
     currProb=bankingCount/length(agtList)    
     push!(empiricalProb,currProb)
-    if abs(currProb-bankProb) < minDelta
-        bestBoolList=tmpBool
+end
+
+# now compare the empirical probability to the probability the agents assume 
+
+pDelta=abs.(empiricalProb.-theorProbs)
+minDelta=1.0
+minK=0
+for k in 1:length(pDelta)
+    if pDelta[k] < minDelta
+        minDelta=pDelta[k]
+        minK=k
     end
 end
-exit()
-for i in 1:length(bestBoolList)
-    if !bestBoolList[i]
-        deleteat!(agtList,i)
+
+participants=bestBoolList[minK]
+
+bankingAgents=Agent[]
+for k in 1:length(participants)
+    if participants[k]
+        push!(bankingAgents,agtList[k])
     end
 end
+
+# now replace agent list with only those banking
+agtList=bankingAgents
 
 # now record agents 
 postDecisionTicker::Int64=0
@@ -155,6 +192,8 @@ graphWrite()
 # generate bank
 theBank=bankGen()
 
+
+
 # now set second seed
 Random.seed!(argVec[3])
 
@@ -168,18 +207,19 @@ notFail::Bool
 # now. begin the model
 for t in 1:withdrawPeriods
     # exogenously withdraw agents
-    #println("Exog Withdraw")
-    #println(schedule[t])
+    println("Exog Withdraw")
+    println(schedule[t])
     for wAgt in schedule[t]
         #println(wAgt.idx)
+        withdraw(wAgt,true,t,0)
         global notFail
-        notFail=withdraw(wAgt,true,t,0)
-        #println(theBank.vault)
+        notFail=bankrupt()
+        println(theBank.vault)
     end
     global notFail
     if !notFail
-        #println("Bank Failure?")
-        #println(!notFail)
+        println("Bank Failure?")
+        println(!notFail)
         # give an instruction to avoid error
         zzz=5
         break
@@ -223,20 +263,10 @@ for t in 1:withdrawPeriods
 #println("Bank Failure?")
 #println(!notFail)
 end
-# test functions
-#tst=decision(agtList[1])
-#println(tst)
-#probList=Float64[]
-#for agt in agtList
-#    if agt.banked
-#        push!(probList,mean(agtSimulate(agt)))
-#    end
-#end
-#println(maximum(probList))
-#println(minimum(probList))
-#println(mean(probList))
 
-# log model result
-#println("Model Ends")
-#println(theBank.vault)
+# now, if the bank has failed, calculate deposit insurance payouts 
+if !notFail
+
+
+
 modWrite(true)

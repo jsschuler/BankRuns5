@@ -34,7 +34,7 @@ function modWrite(term::Bool)
                   Failure=[false],
                   Finish=[false])
     end
-    #CSV.write("Data4/modelRun"*key*".csv", df,header = false,append=true)
+    CSV.write("../"*dataDir*"/modelRun"*key*".csv", df,header = false,append=true)
 end
 
 function agtWrite(agt)
@@ -48,7 +48,7 @@ function agtWrite(agt)
             )
 
 
-    CSV.write(dataDir*"/agents"*key*".csv", df ,header = false,append=true)
+    CSV.write("../"*dataDir*"/agents"*key*".csv", df ,header = false,append=true)
 end
 
 function withdrawWrite(agt::Agent,exogenous::Bool,t::Int64,tCnt::Int64,result::Bool)
@@ -63,7 +63,7 @@ function withdrawWrite(agt::Agent,exogenous::Bool,t::Int64,tCnt::Int64,result::B
             )
 
 
-    CSV.write(dataDir*"/withdrawals"*key*".csv", df ,header = false,append=true)
+    CSV.write("../"*dataDir*"/withdrawals"*key*".csv", df ,header = false,append=true)
 
 end
 
@@ -80,7 +80,7 @@ function decisionWrite(agt::Agent,pval::Float64,decide::Bool,t::Int64,tCnt::Int6
     decidCol=[decide]
     )
 
-    CSV.write(dataDir*"/decisions"*key*".csv", df ,header = false,append=true)
+    CSV.write("../"*dataDir*"/decisions"*key*".csv", df ,header = false,append=true)
 
 end
 
@@ -92,7 +92,7 @@ function graphWrite()
     global key
     global theGraph
     global dataDir
-    save_object(dataDir*"/graph"*key*".jld2",theGraph)
+    save_object("../"*dataDir*"/graph"*key*".jld2",theGraph)
     vertexCnt=nv(theGraph)
     adjMat=zeros(Int16,vertexCnt,vertexCnt)
 
@@ -103,7 +103,7 @@ function graphWrite()
     # now convert the matrix to a string
     df=DataFrame(adjMat,:auto)
     df[!,:key].=key
-    CSV.write(dataDir*"/graphs"*key*".csv", df ,header = true,append=false)
+    CSV.write("../"*dataDir*"/graphs"*key*".csv", df ,header = true,append=false)
 end
 
 # we need functions to track cloning of agents and the agent who clones them
@@ -127,7 +127,7 @@ function probGen()
 end
 # function to generate the agents according to the parameters
 function agtGen()
-    global agtTicker
+    #global agtTicker
     #agtTicker=agtTicker+1
     dep=distGen()
     dep::Int64
@@ -253,20 +253,29 @@ function exogWithdraw()
     return schedule
 end
 # as well as a function that performs the withdrawal and logs it
-# this function also returns the status of the bank.
-# the value is true if the bank has NOT failed
+# this function also returns whether the agent gets its full deposit
+# the value is true if agent gets full deposit 
+
 function withdraw(agt::Agent,exog::Bool,t::Int64,tCnt::Int64)
     global theBank
+    global depositInsurance
+    result::Bool=true
     # does the bank have enough to cover the deposit?
     if theBank.vault >= agt.deposit
         theBank.vault=theBank.vault-agt.deposit
-        result=true
-        result::Bool
+        
+    elseif agt.deposit <= depositInsurance +  theBank.vault
+        # record that this agent was the agent who broke the bank
+        global bankBreaker
+        bankBreaker=agt
+        global failurePay
+        failurePay=UInt64(theBank.vault)
+        theBank.vault=0
+        
     else
         #println("Oops")
         theBank.vault=0
         result=false
-        result::Bool
     end
     agt.banked=false
     withdrawWrite(agt,exog,t,tCnt,result)
@@ -278,19 +287,28 @@ end
 # creates its own simulated bank.
 function withdraw(agt::simAgent,theBank::simBank)
     # does the bank have enough to cover the deposit?
+    result::Bool=true
     if theBank.vault >= agt.deposit
         theBank.vault=theBank.vault-agt.deposit
-        result=true
-        result::Bool
+        
+    elseif agt.deposit <= depositInsurance +  theBank.vault
+        theBank.vault=0 
     else
         theBank.vault=0
         result=false
-        result::Bool
     end
     agt.banked=false
     withdrawWrite(agt)
     return result
 end
+
+# we also need a function to check if the bank has failed 
+
+function bankrupt()
+    global theBank
+    return theBank.vault==0
+end
+
 
 # this function generates a simulator from the perspective of a given agent.
 # it runs this simulation in parallel for speed.

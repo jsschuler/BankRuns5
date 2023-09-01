@@ -7,7 +7,7 @@
 ################################################################################
 # we need an agent
 mutable struct Agent
-    idx::UInt64
+    idx::Int64
     deposit::UInt64
     p::Float64
     banked::Bool

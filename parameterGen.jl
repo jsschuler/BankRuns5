@@ -38,7 +38,7 @@ using CSV
 
 
 
-dataDir="Data1"
+dataDir="../BankRunData"
 # how many model initializations to run?
 seedRun=1
 # and how many times to run each initialization?
@@ -67,6 +67,7 @@ distributionTypes=String["Gamma","Levy"]
 distributionParamA=[]
 distributionParamB=[]
 neighborDepth=collect(0:20)
+depositInsurance=[]
 col1=[]
 col2=[]
 col3=[]
@@ -82,6 +83,7 @@ col12=[]
 col13=[]
 col14=[]
 col15=[]
+col16=[]
 # take a random sample of a Cartesian join
 
 
@@ -101,6 +103,7 @@ col15=[]
         push!(col13,sample(.5:.5:20,1)[1])
         push!(col14,sample(.5:.5:20,1)[1])
         push!(col15,sample(0:20,1)[1])
+        push!(col16,sample(0:0.15:.9,1)[1])
     end
 
 println(length(col1))
@@ -127,6 +130,7 @@ ctrlFrame[!,"distributionType"]=repeat(col12,runSize)
 ctrlFrame[!,"distributionParamA"]=repeat(col13,runSize)
 ctrlFrame[!,"distributionParamB"]=repeat(col14,runSize)
 ctrlFrame[!,"neighborDepth"]=repeat(col15,runSize)
+ctrlFrame[!,"depositInsurance"]=repeat(col16,runSize)
 ctrlFrame[!,"complete"]=repeat([false],runSize*seedRun)
 #println(ctrlFrame[1:10,:])
 ctrlName="runCtrl_"*Dates.format(now(),"yyyymmddHHMMSS")*".jld2"
