@@ -197,7 +197,7 @@ function clone(agt::Agent)
 end
 
 function clone(theBank::Bank)
-    return(simBank(theBank.vault))
+    return(simBank(theBank.vault,theBank.depositInsurance,theBank.withdrawHistory))
 end
 # this function generates the bank object
 function bankGen()
@@ -209,7 +209,7 @@ function bankGen()
     for agt in agtList
         totDeposit=totDeposit+agt.deposit
     end
-    return(Bank(floor(Int64,reserveRatio*totDeposit)),depositInsurance,Float64[])
+    return(Bank(floor(Int64,reserveRatio*totDeposit)),depositInsurance,Float64[0.0])
 end
 # we need a function that returns the banked agents in a random order
 function bankedAgts()
@@ -280,6 +280,7 @@ function withdraw(agt::Agent,exog::Bool,t::Int64,tCnt::Int64)
     end
     agt.banked=false
     withdrawWrite(agt,exog,t,tCnt,result)
+    push!(theBank.withdrawHistory,agt.deposit)
     return result
 end
 
@@ -303,7 +304,7 @@ function withdraw(agt::simAgent,theBank::simBank)
     else
         if theBank.vault >= agt.deposit
             theBank.vault=theBank.vault-agt.deposit
-        elseif agt.deposit <= max(theBank.withdrawHistory) +  theBank.vault
+        elseif agt.deposit <= maximum(theBank.withdrawHistory) +  theBank.vault
             theBank.vault=0 
         else
             theBank.vault=0
@@ -312,6 +313,7 @@ function withdraw(agt::simAgent,theBank::simBank)
     end
     agt.banked=false
     withdrawWrite(agt)
+    push!(theBank.withdrawHistory,agt.deposit)
     return result
 end
 
@@ -436,7 +438,8 @@ function initSimulate(agt::Agent,pct::Float64)
         # the percent of agents who bank is a parameter so we 
         # can use fixed point iteration to find what percentage 
         # results in the same percentage of agents banking
-        agtBank=simBank(Int128(0))
+        global depositInsurance
+        agtBank=simBank(Int128(0),depositInsurance,Float64[])
         global agtCnt
         bankCount::Int64=round(Int64,pct*agtCnt)
         simuAgents=simAgent[]
@@ -467,6 +470,7 @@ function initSimulate(agt::Agent,pct::Float64)
 
     global depth
     dummy=repeat(Int64[1],depth)
+    #withDrawSimul(1)
     out=Folds.map(withDrawSimul,dummy)
     return(mean(out))
 end

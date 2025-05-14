@@ -29,7 +29,7 @@ dataDir="BankRunData"
 
 # load control file
 #ctrlFile=ARGS[1]
-ctrlFile="runCtrl_20230831191053.jld2"
+ctrlFile="runCtrl_20250514135608.jld2"
 #println(ctrlFile)
 ctrlFrame=load_object(ctrlFile)
 #println(ctrlFrame[1:10,:])
