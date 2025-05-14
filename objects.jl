@@ -25,8 +25,12 @@ end
 
 mutable struct Bank
     vault::Int128
+    depositInsurance::Float64
+    withdrawHistory::Array{Float64}
 end
 
 mutable struct simBank
     vault::Int128
+    depositInsurance::Float64
+    withdrawHistory::Array{Float64}
 end

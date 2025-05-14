@@ -1,7 +1,7 @@
 ################################################################################
 #              Replacement Bank Run Model                                      #
 #               (networked)                                                    #
-#               August 2023                                                    #
+#               May 2025                                                       #
 #               John S. Schuler                                                #
 #               Main Control Code                                              #
 ################################################################################
@@ -96,6 +96,14 @@ else
     top::Float64=10000*base
     dist=truncated(rawDist,0,top)
 end
+
+
+# agents withdraw either exogenously or endogenously
+# endogenous withdrawals are based on the probability of less than the full deposit.
+# we have two deposit insurance schemes 
+# one is a standard fixed amount
+# the other scheme works as follows:
+# agents still banking are insured up to the greatest prior deposit. 
 
 # now from the distribution, determine the cut off for deposit depositInsurance
 # if the deposit insurance is infinite, we set it to the largest agent deposit 

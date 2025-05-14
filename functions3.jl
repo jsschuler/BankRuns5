@@ -203,12 +203,13 @@ end
 function bankGen()
     global agtList
     global reserveRatio
+    global depositInsurance
     totDeposit=0
     totDeposit::Int64
     for agt in agtList
         totDeposit=totDeposit+agt.deposit
     end
-    return(Bank(floor(Int64,reserveRatio*totDeposit)))
+    return(Bank(floor(Int64,reserveRatio*totDeposit)),depositInsurance,Float64[])
 end
 # we need a function that returns the banked agents in a random order
 function bankedAgts()
@@ -288,14 +289,26 @@ end
 function withdraw(agt::simAgent,theBank::simBank)
     # does the bank have enough to cover the deposit?
     result::Bool=true
-    if theBank.vault >= agt.deposit
-        theBank.vault=theBank.vault-agt.deposit
-        
-    elseif agt.deposit <= depositInsurance +  theBank.vault
-        theBank.vault=0 
+    global altDepositInsurance
+    if !altDepositInsurance
+        if theBank.vault >= agt.deposit
+            theBank.vault=theBank.vault-agt.deposit
+
+        elseif agt.deposit <= depositInsurance +  theBank.vault
+            theBank.vault=0 
+        else
+            theBank.vault=0
+            result=false
+        end
     else
-        theBank.vault=0
-        result=false
+        if theBank.vault >= agt.deposit
+            theBank.vault=theBank.vault-agt.deposit
+        elseif agt.deposit <= max(theBank.withdrawHistory) +  theBank.vault
+            theBank.vault=0 
+        else
+            theBank.vault=0
+            result=false
+        end
     end
     agt.banked=false
     withdrawWrite(agt)

@@ -84,6 +84,7 @@ col13=[]
 col14=[]
 col15=[]
 col16=[]
+col17=[]
 # take a random sample of a Cartesian join
 
 
@@ -104,6 +105,7 @@ col16=[]
         push!(col14,sample(.5:.5:20,1)[1])
         push!(col15,sample(0:20,1)[1])
         push!(col16,sample(0:0.15:.9,1)[1])
+        push!(col17,sample([true,false],1)[1])
     end
 
 println(length(col1))
@@ -131,6 +133,7 @@ ctrlFrame[!,"distributionParamA"]=repeat(col13,runSize)
 ctrlFrame[!,"distributionParamB"]=repeat(col14,runSize)
 ctrlFrame[!,"neighborDepth"]=repeat(col15,runSize)
 ctrlFrame[!,"depositInsurance"]=repeat(col16,runSize)
+ctrlFrame[!,"altInsurance"]=repeat(col17,runSize)
 ctrlFrame[!,"complete"]=repeat([false],runSize*seedRun)
 #println(ctrlFrame[1:10,:])
 ctrlName="runCtrl_"*Dates.format(now(),"yyyymmddHHMMSS")*".jld2"
