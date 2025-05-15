@@ -9,7 +9,6 @@
 mutable struct Agent
     idx::Int64
     deposit::UInt64
-    p::Float64
     banked::Bool
 end
 
@@ -19,18 +18,33 @@ end
 mutable struct simAgent
     idx::UInt64
     deposit::UInt64
-    p::Float64
     banked::Bool
 end
 
 mutable struct Bank
-    vault::Int128
-    depositInsurance::Float64
-    withdrawHistory::Array{Float64}
+    vault::Int64
+    bankingList::Array{Agent}
+    withdrawHistory::Array{Agent}
 end
 
 mutable struct simBank
-    vault::Int128
+    vault::Int64
     depositInsurance::Float64
-    withdrawHistory::Array{Float64}
+    withdrawHistory::Array{Agent}
+end
+
+mutable struct Model
+    agtList::Array{Agent}
+    reserveRatio::Float64
+    theBank::Bank
+    depositInsurance::Float64
+    seed::Int64
+    depositDistribution::Distribution
+    network::Graph
+    probThresh::Float64
+end
+
+mutable struct simModel
+    agtList::Array{simAgent}
+    theBank::simBank
 end
