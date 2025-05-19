@@ -5,7 +5,6 @@
 #               John S. Schuler                                                #
 #               Main Control Code                                              #
 ################################################################################
-using Folds
 using Distributions
 using Random
 using Distributed
@@ -15,6 +14,11 @@ using Graphs
 using StatsBase
 using JLD2
 using Dates
+
+
+include("objects.jl")
+
+include("functions4.jl")
 
 # now, we summarize the model  
 
@@ -34,3 +38,11 @@ using Dates
 # now, the structs are generated once and for all
 # so we can use processes based parallelism 
 
+modelGen(35654,
+        100,
+        .05,
+        newman_watts_strogatz(100, 20, .2),
+        Levy(10,10),
+        .3,
+        .6,
+        .1)

@@ -8,7 +8,7 @@
 # we need an agent
 mutable struct Agent
     idx::Int64
-    deposit::UInt64
+    deposit::Float64
     banked::Bool
 end
 
@@ -16,19 +16,19 @@ end
 # subTypes of a common agent since they never share a space.
 
 mutable struct simAgent
-    idx::UInt64
-    deposit::UInt64
+    idx::Int64
+    deposit::Float64
     banked::Bool
 end
 
 mutable struct Bank
-    vault::Int64
+    vault::Float64
     bankingList::Array{Agent}
     withdrawHistory::Array{Agent}
 end
 
 mutable struct simBank
-    vault::Int64
+    vault::Float64
     depositInsurance::Float64
     withdrawHistory::Array{Agent}
 end
@@ -42,6 +42,7 @@ mutable struct Model
     depositDistribution::Distribution
     network::Graph
     probThresh::Float64
+    exogProb::Float64
 end
 
 mutable struct simModel

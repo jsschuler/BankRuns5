@@ -19,32 +19,32 @@ function modelGen(seed::Int64,
                   probThresh::Float64,
                   network::SimpleGraph{Int64},
                   depositDistribution::Distribution,
-                  reserveRatio::Float64)
-    # generate the model
-    mod=modelInit(seed,
-                   probThresh,
-                   network,
-                   depositDistribution)
+                  reserveRatio::Float64,
+                  depositInsurance::Float64,
+                  exogProb::Float64)
     # generate the deposits
     deposits=rand(depositDistribution,agtCnt)
     # generate the agents
+    agtList::Array{Agent}=Agent[]
     for i in 1:agtCnt
-        push!(mod.agtList,Agent(i,deposits,true))
+        push!(agtList,Agent(i,deposits[i],true))
     end
     bankingList::Array{Agent}=Agent[]
-    for agt in mod.agtList
+
+    for agt in agtList
             push!(bankingList,agt)
     end
     # generate the bank
-    theBank=bank(
+    theBank=Bank(
         reserveRatio*sum(deposits),
         bankingList,
         Agent[]
     )
     mod=Model(
-        mod.agtList,
-        theBank,
+        agtList,
         reserveRatio,
+        theBank,
+        depositInsurance,
         seed,
         depositDistribution,
         network,
@@ -52,5 +52,4 @@ function modelGen(seed::Int64,
     )
     return mod
 end
-
 
