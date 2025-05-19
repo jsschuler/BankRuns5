@@ -42,7 +42,7 @@ mutable struct Model
     depositDistribution::Distribution
     network::Graph
     probThresh::Float64
-    exogProb::Float64
+    exogProb::Distribution
 end
 
 mutable struct simModel

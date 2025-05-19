@@ -20,6 +20,9 @@ include("objects.jl")
 
 include("functions4.jl")
 
+# major parameters
+depth::Int64=1000
+
 # now, we summarize the model  
 
 # model initialization
@@ -45,4 +48,4 @@ modelGen(35654,
         Levy(10,10),
         .3,
         .6,
-        .1)
+        Binomial(100,.1))
