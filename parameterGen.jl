@@ -17,73 +17,38 @@ using CSV
 # search DEPTH (number or simulation rounds agents run when predicting probability
 #       of default)
 # RESERVE RATIO
-# loP : lowest probability an agent estimates before withdrawing
-# hiP : highest probability an agent estimates before withdrawing
-# meanP : mean probability an agent estimates before withdrawing
-# DEPOSIT DISTRIBUTION PARAMETERS
-# TYPE: either Gamma and its parameters
-#       or Levy and its parameters
-# in the case of Gamma, the parameter is skewness.
-# in the case of Levy, the parameter is scale
-# Graph Parameters
+# DEPOSIT DISTRIBUTION OBJECT
+
+# Graph OBJECT
 # Types are Watts-Strogatz, Barabasi-Albert, Erdos-Renyi, and complete
 # and a vector of the needed parameters for each
 # GRAPHS for each graph, a and b in (0,1)
-# These are translated various ways depending on the graph type
-# Watts-Strogatz, we have expected degree an and b
-#       for Barabasi-Albert, we have an and bn
-#       for complete. no parameters needed
-#       for Erdos Renyi, we just give it the number of edges an, b is ignored
-
 
 
 
 dataDir="../BankRunData"
 # how many model initializations to run?
-seedRun=1
+seedRun=10
 # and how many times to run each initialization?
-runSize=1
+runSize=100
 
 
 #agtCnts=cat(collect(10:10:100),
 #            collect(100:100:1000),
 #            collect(1000:1000:5000),dims=1)
 
-agtCnts=cat(collect(10:10:100),
-            collect(100:100:500),dims=1)
+agtCnts=[1000]
 
-withdrawalPeriods=[1,5,10]
-reserveRatio=collect(.1:.1:.9)
-loP=[.01]
-hiP=[.1]
-depositParam=collect(.5:.5:10)
-#graphType=String["Watts","Bara","Erdos","Complete"]
-graphType=String["Watts","Erdos","Complete"]
+reserveRatio=collect(.05:.05:.9)
+
+
 graphParamA=collect(.05:.1:.95)
 graphParamB=collect(.05:.1:.95)
-exogP=collect(.01:.01:.1)
+exogP=collect(.05:.05:.5)
 depth=[10000]
-distributionTypes=String["Gamma","Levy"]
-distributionParamA=[]
-distributionParamB=[]
-neighborDepth=collect(0:20)
-depositInsurance=[]
-col1=[]
-col2=[]
-col3=[]
-col4=[]
-col5=[]
-col6=[]
-col7=[]
-col8=[]
-col9=[]
-col10=[]
-col11=[]
-col12=[]
-col13=[]
-col14=[]
-col15=[]
-col16=[]
+depsoitDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5.0,10)]
+
+
 col17=[]
 # take a random sample of a Cartesian join
 

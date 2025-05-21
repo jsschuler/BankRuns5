@@ -43,13 +43,13 @@ include("functions4.jl")
 # so we can use processes based parallelism 
 
 mod=modelGen(sample(1:1000000,1)[1],
-             100,
+             1000,
              .05,
-             newman_watts_strogatz(100, 10, .2),
+             newman_watts_strogatz(1000, 10, .2),
              Pareto(1.0,10),
              .15,
              0.0,
-             Binomial(100,.2))
+             Binomial(1000,.2))
 rMod=modelRun(mod)
 println(rMod)
 println(mod.theBank.vault)
