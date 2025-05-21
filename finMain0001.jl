@@ -15,14 +15,15 @@ using StatsBase
 using JLD2
 using Dates
 
+# major parameters
+depth::Int64=1000
 
 include("objects.jl")
 
 include("functions4.jl")
 
-# major parameters
-depth::Int64=1000
 
+#println(depth)
 # now, we summarize the model  
 
 # model initialization

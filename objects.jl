@@ -29,7 +29,7 @@ end
 
 mutable struct simBank
     vault::Float64
-    depositInsurance::Float64
+    bankingList::Array{Agent}
     withdrawHistory::Array{Agent}
 end
 

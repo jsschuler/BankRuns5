@@ -52,21 +52,30 @@ function neighborList(mod::Model,agt::Agent)
     return neighborAgents
 end
 
-# now the cloning functions
-function clone(agt::Agent)
-    # clone the agent
-    return simAgent(agt.idx,agt.deposit,agt.banked)
-end
-function cloneBank(theBank::Bank)
-    # clone the bank
-    return simBank(theBank.vault,theBank.depositInsurance,Agent[])
-end
+# now the cloning function
 function cloneModel(mod::Model)
     # clone the model
-    return simModel(
-        [clone(agt) for agt in mod.agtList],
-        cloneBank(mod.theBank)
+   cloneAgtList::Array{simAgent}=simAgent[]
+    for agt in mod.agtList
+        push!(cloneAgtList,simAgent(agt.idx,agt.deposit,agt.banked))
+    end
+
+    theBank=simBank(
+        mod.theBank.vault,
+        Agent[],
+        Agent[]
     )
+    for agt in cloneAgtList
+        if agt.banked
+            push!(theBank.bankingList,agt)
+        else
+            push!(theBank.withdrawHistory,agt)
+        end
+        return simModel(
+            cloneAgtList,
+            theBank
+        )
+    end
 end
 # now copy functions to copy the clones
 function copy(agt::simAgent)
@@ -118,7 +127,7 @@ function withdraw(mod::Model,agt::Agent)
     mod.theBank.vault-=agt.deposit
 end
 
-function withdraw(mod::SimModel,agt::simAgent)
+function withdraw(mod::simModel,agt::simAgent)
     # withdraw the agent
     agt.banked=false
     # add the agent to the withdraw history
@@ -204,6 +213,7 @@ function modelRun(mod::Model)
         additionalWithdrawals=totalWithdrawn-numWithdrawn
         # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
         subModResults=[]
+        global depth
         for k in 1:depth
             push!(subModArray,subModelRun((copyModel(simModel),agt,additionalWithdrawals)...))
         end
@@ -226,4 +236,4 @@ function modelRun(mod::Model)
         end
         return runState
     end
-    
+end
