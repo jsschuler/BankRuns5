@@ -41,11 +41,12 @@ depth::Int64=1000
 # now, the structs are generated once and for all
 # so we can use processes based parallelism 
 
-modelGen(35654,
-        100,
-        .05,
-        newman_watts_strogatz(100, 20, .2),
-        Levy(10,10),
-        .3,
-        .6,
-        Binomial(100,.1))
+mod=modelGen(35654,
+             100,
+             .05,
+             newman_watts_strogatz(100, 20, .2),
+             Levy(10,10),
+             .3,
+             .6,
+             Binomial(100,.1))
+modelRun(mod)

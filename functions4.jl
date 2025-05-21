@@ -136,28 +136,53 @@ function withdraw(mod::SimModel,agt::simAgent)
     return agtReturn
 end
 
-function subModelRun(mod::simModel,agt::Agent,additionalWithdrawals::Int64)
-    stillBanking=Random.shuffle(mod.theBank.bankingList)
-    # now did the current agent withdraw?
-    currAgtWithdraw=false
-    for i in 1:additionalWithdrawals
-        # get the agent to withdraw
-        simAgt=stillBanking[i]
-        if simAgt.idx==agt.idx
-            currAgtWithdraw=true
-        end
+function index(agt::Agent)
+    return agt.idx
+end
+function index(agt::simAgent)
+    return agt.idx
+end
+
+function subModelRun(mod::simModel,agt::Agent,withdrawingAgents::Array{Agent},additionalWithdrawals::Int64)
+    # now, we debank those neightbors
+    for idx in index.(withdrawingAgents)
+        # get the agent
+        agt=mod.agtList[idx]
         # withdraw the agent
         agtReturn=withdraw(mod,agt)
-        
     end
-
+    stillBanking=Random.shuffle(mod.theBank.bankingList)
+    # now, we remove the number of additional withdrawing agents from the sub model.
+    # if the current agent is among them, we skip it. 
+    numWithdrawn::Int64=1
+    while true
+        if stillBanking[numWithdrawn].idx!=agt.idx
+            withdraw(mod,stillBanking[numWithdrawn])
+            numWithdrawn+=1
+        end
+        if numWithdrawn==additionalWithdrawals
+            break
+        end 
+    end
+    # now, the agent withdraws from the bank
+    for mAgt in mod.agtList
+        if index(agt)==index(mAgt)
+            # now, we withdraw the agent
+            result=withdraw(mod,mAgt)
+        end
+    end
+    return (result,result <= agt.deposit)
 end
 
 # now the main model function
 function modelRun(mod::Model)
+    runState::Bool=false
     # set the seed
     Random.seed!(mod.seed)
-    # make a copy of the model for each
+    # make a copy of the model
+    simModel=cloneModel(mod)
+
+
     exogWithdrawals(mod)
     # now, randomize the order of the agents still banking
     stillBanking=Random.shuffle(mod.theBank.bankingList)
@@ -165,20 +190,40 @@ function modelRun(mod::Model)
     for agt in stillBanking
         # get the neighbors of the agent
         neighbors=neighborList(mod,agt)
-        # get the number of neighbors that have withdrawn
-        numWithdrawn=0
+        withdrawnNeighbors::Array{Agent}=Agent[]
         for n in neighbors
             if !n.banked
-                numWithdrawn+=1
+                push!(withdrawnNeighbors,n)
             end
         end
         # now calculate the proportion of neighbors that have withdrawn
-        propWithdrawn=numWithdrawn/length(neighbors)
+        propWithdrawn=length(withdrawnNeighbors)/length(neighbors)
         # now calculate the count of agents that have withdrawn if this is a random sample
         totalWithdrawn=round(Int64,propWithdrawn*length(mod.agtList))
         # now calculate additional withdrawals
         additionalWithdrawals=totalWithdrawn-numWithdrawn
+        # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
+        subModResults=[]
+        for k in 1:depth
+            push!(subModArray,subModelRun((copyModel(simModel),agt,additionalWithdrawals)...))
+        end
+        # now, have the agent calculate its probability of getting less than its deposit
+        results::Array{Bool}=Bool[]
+        for el in subModResults
+            push!(results,el[2])
+        end
+        # now calculate the probability of getting less than its deposit
+        probLessThanDeposit=mean(results)
+        # now if the probability is greater than the threshold, withdraw
+        if probLessThanDeposit>mod.probThresh
+            withdraw(mod,agt)
+        end
 
-
+        if mod.theBank.vault<=0.0
+            # if the bank is bankrupt, we need to stop the simulation
+            runState=true
+            break
+        end
+        return runState
     end
     
