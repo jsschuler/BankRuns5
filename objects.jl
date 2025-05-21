@@ -29,8 +29,8 @@ end
 
 mutable struct simBank
     vault::Float64
-    bankingList::Array{Agent}
-    withdrawHistory::Array{Agent}
+    bankingList::Array{simAgent}
+    withdrawHistory::Array{simAgent}
 end
 
 mutable struct Model

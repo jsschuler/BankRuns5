@@ -98,12 +98,18 @@ end
 function exogWithdrawals(mod::Model)
 
     # get the number of agents that will withdraw
-    numWithdrawals=round(Int64,mod.exogProb*length(mod.agtList))
+    exogDistribution=Binomial(length(mod.agtList),mod.exogProb)
+    numWithdrawals=rand(exogDistribution,1)[1]
     # get the list of agents that will withdraw
-    withdrawList=rand(mod.seed,mod.agtList,numWithdrawals)
+    withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
     # set the banked status to false
     for agt in withdrawList
         agt.banked=false
+        filter!(x->x.idx!=agt.idx,mod.theBank.bankingList)
+    end
+    for agt in withdrawList
+        # add the agent to the withdraw history
+        push!(mod.theBank.withdrawHistory,agt)
     end
     return withdrawList
 end
