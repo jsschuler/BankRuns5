@@ -48,4 +48,6 @@ end
 mutable struct simModel
     agtList::Array{simAgent}
     theBank::simBank
+    depositInsurance::Float64
+    depositDistribution::Distribution
 end

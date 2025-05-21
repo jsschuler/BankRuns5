@@ -52,6 +52,13 @@ function neighborList(mod::Model,agt::Agent)
     return neighborAgents
 end
 
+function deposit(agt::Agent)
+    return agt.deposit
+end
+function deposit(agt::simAgent)
+    return agt.deposit
+end
+
 # now the cloning function
 function clone(mod::Model)
     # clone the model
@@ -73,7 +80,9 @@ function clone(mod::Model)
         end
         return simModel(
             cloneAgtList,
-            theBank
+            theBank,
+            mod.depositInsurance,
+            mod.depositDistribution
         )
     end
 end
@@ -99,7 +108,9 @@ function clone(mod::simModel)
     end
     return simModel(
         cloneAgtList,
-        theBank
+        theBank,
+        mod.depositInsurance,
+        mod.depositDistribution
     )
 end
 
@@ -124,6 +135,30 @@ function exogWithdrawals(mod::Model)
 end
 # and a function to perform the withdrawal
 function withdraw(mod::Model,agt::Agent)
+    # what is the status of the deposit insurance? 
+    # the deposit insurance is either a quantile (0 to 1) of the deposit distribution
+    # or if not in this range, we apply the adaptive deposit insurance scheme
+    maxDepositInsurance=0.0
+    # what is the maximum deposit insurance payout?
+    if !(0.0<= mod.depositInsurance < 1.0)
+        if length(mod.theBank.withdrawHistory)==0
+            maxDepositInsurance=0.0
+        else
+            # get the maximum deposit insurance payout
+            # this is the maximum deposit of the agents that have withdrawn
+            # and is the adaptive deposit insurance scheme
+            # we need to check if there are any agents that have withdrawn
+            # if not, we set the maximum deposit insurance to 0.0
+            # otherwise, we set it to the maximum deposit of the agents that have withdrawn
+            # get the maximum deposit insurance payout
+            maxDepositInsurance=maximum(deposit.(mod.theBank.withdrawHistory))
+        end
+    else
+        # if the deposit insurance is a quantile, we apply the adaptive deposit insurance scheme
+        # get the quantile of the deposit distribution
+        maxDepositInsurance=quantile(mod.depositDistribution,mod.depositInsurance)
+    end
+
     # withdraw the agent
     agt.banked=false
     # add the agent to the withdraw history
@@ -132,7 +167,7 @@ function withdraw(mod::Model,agt::Agent)
     mod.theBank.bankingList=filter(x->x.idx!=agt.idx,mod.theBank.bankingList)
     # what does the agent get out?
     if agt.deposit>mod.theBank.vault
-        agtReturn=max(0.0,mod.theBank.vault)
+        agtReturn=max(0.0,mod.theBank.vault,min(agt.deposit,maxDepositInsurance))
     else
         agtReturn=agt.deposit
     end
@@ -143,6 +178,31 @@ function withdraw(mod::Model,agt::Agent)
 end
 
 function withdraw(mod::simModel,agt::simAgent)
+        # what is the status of the deposit insurance? 
+    # the deposit insurance is either a quantile (0 to 1) of the deposit distribution
+    # or if not in this range, we apply the adaptive deposit insurance scheme
+    maxDepositInsurance=0.0
+    # what is the maximum deposit insurance payout?
+    if !(0.0<= mod.depositInsurance < 1.0)
+        if length(mod.theBank.withdrawHistory)==0
+            maxDepositInsurance=0.0
+        else
+            # get the maximum deposit insurance payout
+            # this is the maximum deposit of the agents that have withdrawn
+            # and is the adaptive deposit insurance scheme
+            # we need to check if there are any agents that have withdrawn
+            # if not, we set the maximum deposit insurance to 0.0
+            # otherwise, we set it to the maximum deposit of the agents that have withdrawn
+            # get the maximum deposit insurance payout
+            maxDepositInsurance=maximum(deposit.(mod.theBank.withdrawHistory))
+        end
+    else
+                # if the deposit insurance is a quantile, we apply the adaptive deposit insurance scheme
+        # get the quantile of the deposit distribution
+        maxDepositInsurance=quantile(mod.depositDistribution,mod.depositInsurance)
+    end
+
+    
     # withdraw the agent
     agt.banked=false
     # add the agent to the withdraw history
@@ -151,7 +211,7 @@ function withdraw(mod::simModel,agt::simAgent)
     mod.theBank.bankingList=filter(x->x.idx!=agt.idx,mod.theBank.bankingList)
     # what does the agent get out?
     if agt.deposit>mod.theBank.vault
-        agtReturn=max(0.0,mod.theBank.vault)
+        agtReturn=max(0.0,mod.theBank.vault,min(agt.deposit,maxDepositInsurance))
     else
         agtReturn=agt.deposit
     end

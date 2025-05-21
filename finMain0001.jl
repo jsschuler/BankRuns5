@@ -46,9 +46,9 @@ mod=modelGen(sample(1:1000000,1)[1],
              100,
              .05,
              newman_watts_strogatz(100, 10, .2),
-             Pareto(1.5,10),
+             Pareto(1.0,10),
              .15,
-             .6,
+             0.0,
              Binomial(100,.2))
 rMod=modelRun(mod)
 println(rMod)
