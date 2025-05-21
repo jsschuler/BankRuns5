@@ -42,14 +42,14 @@ include("functions4.jl")
 # now, the structs are generated once and for all
 # so we can use processes based parallelism 
 
-mod=modelGen(35654,
+mod=modelGen(sample(1:1000000,1)[1],
              100,
              .05,
-             newman_watts_strogatz(100, 20, .2),
-             Levy(10,1),
-             .3,
+             newman_watts_strogatz(100, 50, .2),
+             Pareto(1,10),
+             .15,
              .6,
-             Binomial(100,.05))
+             Binomial(100,.1))
 rMod=modelRun(mod)
 println(rMod)
 println(mod.theBank.vault)

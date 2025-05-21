@@ -191,8 +191,8 @@ function subModelRun(mod::simModel,agt::Agent,withdrawingAgents::Array{Agent},ad
     #println(agt in mod.agtList
     currAgt=filter(x->x.idx==agt.idx,mod.agtList)[1]
     result=withdraw(mod,currAgt)
-    println("Agent Deposit was ",agt.deposit)
-    println("Result: ",result)
+    #println("Agent Deposit was ",agt.deposit)
+    #println("Result: ",result)
     return (result,result < agt.deposit)
 end
 
@@ -210,7 +210,7 @@ function modelRun(mod::Model)
     stillBanking=Random.shuffle(mod.theBank.bankingList)
     # each agent observes the percentage of its neighbors that have withdrawn
     for agt in stillBanking
-        println("Running Agent ",agt.idx)
+        #println("Running Agent ",agt.idx)
         # get the neighbors of the agent
         neighbors=neighborList(mod,agt)
         withdrawnNeighbors::Array{Agent}=Agent[]
@@ -228,9 +228,9 @@ function modelRun(mod::Model)
         # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
         subModResults=[]
         global depth
-        println("Simulating for agent ",agt.idx)
+        #println("Simulating for agent ",agt.idx)
         for k in 1:depth
-            println("Simulating for agent ",agt.idx)
+            #println("Simulating for agent ",agt.idx)
             push!(subModResults,subModelRun((clone(simModel),agt,withdrawnNeighbors,additionalWithdrawals)...))
         end
         # now, have the agent calculate its probability of getting less than its deposit
@@ -242,9 +242,7 @@ function modelRun(mod::Model)
         probLessThanDeposit=mean(results)
         # now if the probability is greater than the threshold, withdraw
         if probLessThanDeposit>mod.probThresh
-            println(probLessThanDeposit)
-            println("Withdrawing")
-            println("Agent ",agt.idx)
+            println("Endogenous Withdawal Agent ",agt.idx," at p=",probLessThanDeposit, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault)
             withdraw(mod,agt)
         end
 
