@@ -5,9 +5,10 @@
 #               John S. Schuler                                                #
 #               Main Control Code                                              #
 ################################################################################
+using Distributed
 @everywhere using Distributions
 @everywhere using Random
-@everywhere using Distributed
+
 @everywhere using CSV
 @everywhere using DataFrames
 @everywhere using Graphs
@@ -55,13 +56,13 @@ while true
         for c in keys(coreDict)
             if isnothing(coreDict[c])
                 # if the core dictionary is nothing, we send it the parameters
-                #println("Sending Parameters")
+                println("Sending Parameters")
                 println("core")
                 println(c)
                 coreDict[c]=@spawnat c include("modelStep.jl")
                 #println(resultDict==:complete)
             elseif isReady(coreDict[c])
-                #println("Ready")
+                println("Ready")
                 resultDict[c]=fetch(coreDict[c])
             end
         end
