@@ -45,11 +45,11 @@ include("functions4.jl")
 mod=modelGen(sample(1:1000000,1)[1],
              100,
              .05,
-             newman_watts_strogatz(100, 50, .2),
-             Pareto(1,10),
+             newman_watts_strogatz(100, 10, .2),
+             Pareto(1.5,10),
              .15,
              .6,
-             Binomial(100,.1))
+             Binomial(100,.2))
 rMod=modelRun(mod)
 println(rMod)
 println(mod.theBank.vault)
