@@ -17,7 +17,7 @@ using Dates
 
 # major parameters
 depth::Int64=1000
-
+pause::Bool=true
 include("objects.jl")
 
 include("functions4.jl")
@@ -46,8 +46,11 @@ mod=modelGen(35654,
              100,
              .05,
              newman_watts_strogatz(100, 20, .2),
-             Levy(10,10),
+             Levy(10,1),
              .3,
              .6,
-             Binomial(100,.1))
-modelRun(mod)
+             Binomial(100,.05))
+rMod=modelRun(mod)
+println(rMod)
+println(mod.theBank.vault)
+println(mod.theBank.withdrawHistory)
