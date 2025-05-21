@@ -5,22 +5,22 @@
 #               John S. Schuler                                                #
 #               Main Control Code                                              #
 ################################################################################
-using Distributions
-using Random
-using Distributed
-using CSV
-using DataFrames
-using Graphs
-using StatsBase
-using JLD2
-using Dates
-
+@everywhere using Distributions
+@everywhere using Random
+@everywhere using Distributed
+@everywhere using CSV
+@everywhere using DataFrames
+@everywhere using Graphs
+@everywhere using StatsBase
+@everywhere using JLD2
+@everywhere using Dates
+cores=16
 # major parameters
-depth::Int64=1000
-pause::Bool=true
-include("objects.jl")
+@everywhere depth::Int64=1000
 
-include("functions4.jl")
+@everywhere include("objects.jl")
+
+@everywhere include("functions4.jl")
 
 
 #println(depth)
@@ -42,15 +42,28 @@ include("functions4.jl")
 # now, the structs are generated once and for all
 # so we can use processes based parallelism 
 
-mod=modelGen(sample(1:1000000,1)[1],
-             1000,
-             .05,
-             newman_watts_strogatz(1000, 10, .2),
-             Pareto(1.0,10),
-             .15,
-             0.0,
-             Binomial(1000,.2))
-rMod=modelRun(mod)
-println(rMod)
-println(mod.theBank.vault)
-println(mod.theBank.withdrawHistory)
+
+
+# now we need to code the sweep to use all cores
+coreDict=Dict()
+resultDict=Dict()
+for j in 2:cores
+    coreDict[j]=nothing
+    resultDict[j]=nothing
+end
+while true
+        for c in keys(coreDict)
+            if isnothing(coreDict[c])
+                # if the core dictionary is nothing, we send it the parameters
+                #println("Sending Parameters")
+                println("core")
+                println(c)
+                coreDict[c]=@spawnat c include("modelStep.jl")
+                #println(resultDict==:complete)
+            elseif isReady(coreDict[c])
+                #println("Ready")
+                resultDict[c]=fetch(coreDict[c])
+            end
+        end
+
+end

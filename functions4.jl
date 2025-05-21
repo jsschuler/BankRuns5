@@ -325,3 +325,16 @@ function modelRun(mod::Model)
     end
     return runState
 end
+
+# now the parallelization functions
+    
+
+function isReady(arg::Future)
+    return isready(arg)
+end
+function isReady(arg::Symbol)
+    return false
+end
+function isReady(arg::Nothing)
+    return false
+end
