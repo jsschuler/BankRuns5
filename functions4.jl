@@ -350,9 +350,9 @@ function modelRun(mod::Model)
             end
             #readline()   
         end
-        #if  !halt && !runState
-        #    println("Halting at tick ",t," with vault ",mod.theBank.vault)
-        #end
+        if  !halt && !runState
+            println("Halting at tick ",t," with vault ",mod.theBank.vault)
+        end
     end
     return runState
 end
@@ -419,6 +419,9 @@ function modelCall()
                 # now we need to fetch the result              
                 fetch(proc2)
         end
+        # write out model results
+        resultRow=DataFrame(key=mod.key,result=rMod)
+        CSV.write(dataDir*"/"*"bankRunResults"*string(workerCore)*".csv",resultRow,writeheader=false,append=true)
     return nothing
 end
 
