@@ -16,10 +16,9 @@ using Distributed
 @everywhere using JLD2
 @everywhere using Dates
 cores=16
-@everywhere workerCore=1
-for c in 2:cores
-    @spawnat c myCore(c)
-end
+#@everywhere workerCore=1
+
+
 # major parameters
 @everywhere depth::Int64=1000
 
@@ -27,6 +26,10 @@ end
 
 @everywhere include("functions4.jl")
 
+for c in 2:cores
+    @spawnat c myCore(c)
+end
+sleep(5)
 
 #println(depth)
 # now, we summarize the model  

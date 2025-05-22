@@ -119,28 +119,6 @@ function clone(mod::simModel)
     )
 end
 
-# we need a function to withdraw exogenously
-function exogWithdrawals(mod::Model)
-    # get the number of agents that will withdraw
-    numWithdrawals=rand(mod.exogProb,1)[1]
-    # get the list of agents that will withdraw
-    withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
-    # set the banked status to false
-    global dataDir
-    global workerCore
-    for agt in withdrawList
-        #println("Exogenous Withdrawal Agent ",agt.idx)
-        agt.banked=false
-        filter!(x->x.idx!=agt.idx,mod.theBank.bankingList)
-        reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=true,deposit=agt.deposit,tick=0,vault=mod.theBank.vault)
-        CSV.write(dataDir*"/"*"bankRunExogenous."*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
-    end
-    for agt in withdrawList
-        # add the agent to the withdraw history
-        push!(mod.theBank.withdrawHistory,agt)
-    end
-    return withdrawList
-end
 # and a function to perform the withdrawal
 function withdraw(mod::Model,agt::Agent)
     # what is the status of the deposit insurance? 
@@ -228,6 +206,29 @@ function withdraw(mod::simModel,agt::simAgent)
     return agtReturn
 end
 
+
+# we need a function to withdraw exogenously
+function exogWithdrawals(mod::Model)
+    # get the number of agents that will withdraw
+    numWithdrawals=rand(mod.exogProb,1)[1]
+    # get the list of agents that will withdraw
+    withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
+    # set the banked status to false
+    global dataDir
+    global workerCore
+    for agt in withdrawList
+        #println("Exogenous Withdrawal Agent ",agt.idx)
+        withdraw(mod,agt)
+        reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=true,deposit=agt.deposit,tick=0,vault=mod.theBank.vault)
+        CSV.write(dataDir*"/"*"bankRunExogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
+    end
+    for agt in withdrawList
+        # add the agent to the withdraw history
+        push!(mod.theBank.withdrawHistory,agt)
+    end
+    return withdrawList
+end
+
 function index(agt::Agent)
     return agt.idx
 end
@@ -282,7 +283,7 @@ function modelRun(mod::Model)
     if mod.theBank.vault<=0.0
         # if the bank is bankrupt, we need to stop the simulation
         runState=true
-        #println("Bankrupt at tick ",t," with vault ",mod.theBank.vault)
+        println("Bankrupt at tick ",t," with vault ",mod.theBank.vault)
         return runState
     end
     while !halt && !runState
@@ -333,7 +334,7 @@ function modelRun(mod::Model)
             probLessThanDepositWD=1-mean(resultsWD)
             # now if the probability is greater than the threshold, withdraw
             global dataDir
-            if probLessThanDepositWD > probLessThanDepositStay
+            if probLessThanDepositWD > probLessThanDepositStay || probLessThanDepositWD==0.0
                 #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
                 withdraw(mod,agt)
                 reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
@@ -425,4 +426,10 @@ end
 function myCore(c)
     global workerCore
     workerCore=c
+    println("Worker Core is ",workerCore)
+end
+
+@everywhere function checkCore()
+    global workerCore
+    println("Worker Core is ",workerCore)
 end
