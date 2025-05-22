@@ -331,7 +331,8 @@ function modelRun(mod::Model)
                 runState=true
                 break
             end
-        #readline()   
+            #readline()   
+        end
         if  !halt && !runState
             println("Halting at tick ",t," with vault ",mod.theBank.vault)
         end
