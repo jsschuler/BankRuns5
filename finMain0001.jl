@@ -94,4 +94,4 @@ while sum(jointFrame.completed) < size(jointFrame,1)
             end
         end    
 end
-CSV.write(dataDir*"/"*"bankRunParametersFin.csv",jointFrame,writeheader=true)
+CSV.write(dataDir*"/"*"bankRunParametersFin.csv",jointFrame[:,[:key,:started,:completed]],writeheader=true)
