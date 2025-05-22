@@ -125,7 +125,7 @@ function exogWithdrawals(mod::Model)
     withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
     # set the banked status to false
     for agt in withdrawList
-        #println("Exogenous Withdrawal Agent ",agt.idx)
+        println("Exogenous Withdrawal Agent ",agt.idx)
         agt.banked=false
         filter!(x->x.idx!=agt.idx,mod.theBank.bankingList)
     end
@@ -268,62 +268,73 @@ function modelRun(mod::Model)
 
 
     exogWithdrawals(mod)
+    # now, whenever an agent withdraws, we reset a state variable since this means all other agents will
+    # re-examing their decision to bank
+    halt::Bool=false
     # now, randomize the order of the agents still banking
-    stillBanking=Random.shuffle(mod.theBank.bankingList)
-    # each agent observes the percentage of its neighbors that have withdrawn
-    for agt in stillBanking
-        #println("Running Agent ",agt.idx)
-        # get the neighbors of the agent
-        neighbors=neighborList(mod,agt)
-        withdrawnNeighbors::Array{Agent}=Agent[]
-        for n in neighbors
-            if !n.banked
-                push!(withdrawnNeighbors,n)
+    t=0
+    while !halt && !runState
+        halt=true
+        t=t+1
+        stillBanking=Random.shuffle(mod.theBank.bankingList)
+        # each agent observes the percentage of its neighbors that have withdrawn
+        for agt in stillBanking
+            #println("Running Agent ",agt.idx)
+            # get the neighbors of the agent
+            neighbors=neighborList(mod,agt)
+            withdrawnNeighbors::Array{Agent}=Agent[]
+            for n in neighbors
+                if !n.banked
+                    push!(withdrawnNeighbors,n)
+                end
             end
-        end
-        # now calculate the proportion of neighbors that have withdrawn
-        propWithdrawn=length(withdrawnNeighbors)/length(neighbors)
-        # now calculate the count of agents that have withdrawn if this is a random sample
-        totalWithdrawn=round(Int64,propWithdrawn*length(mod.agtList))
-        # now calculate additional withdrawals
-        additionalWithdrawals=totalWithdrawn-length(withdrawnNeighbors)
-        # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
-        subModResults=[]
-        initWithdrawResults=[]
-        global depth
-        #println("Simulating for agent ",agt.idx)
-        for k in 1:depth
+            # now calculate the proportion of neighbors that have withdrawn
+            propWithdrawn=length(withdrawnNeighbors)/length(neighbors)
+            # now calculate the count of agents that have withdrawn if this is a random sample
+            totalWithdrawn=round(Int64,propWithdrawn*length(mod.agtList))
+            # now calculate additional withdrawals
+            additionalWithdrawals=totalWithdrawn-length(withdrawnNeighbors)
+            # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
+            subModResults=[]
+            initWithdrawResults=[]
+            global depth
             #println("Simulating for agent ",agt.idx)
-            push!(subModResults,subModelRun((clone(simModel),agt,withdrawnNeighbors,additionalWithdrawals)...))
-            baseMod=clone(simModel)
-            currAgt=filter(x->x.idx==agt.idx,baseMod.agtList)[1]
-            push!(initWithdrawResults,withdraw(baseMod,currAgt))
-        end
-        # now, have the agent calculate its probability of getting less than its deposit
-        resultsStay::Array{Bool}=Bool[]
-        for el in subModResults
-            push!(resultsStay,el[2])
-        end
-        resultsWD::Array{Bool}=Bool[]
-        for el in initWithdrawResults
-            push!(resultsWD,el < agt.deposit)
-        end
+            for k in 1:depth
+                #println("Simulating for agent ",agt.idx)
+                push!(subModResults,subModelRun((clone(simModel),agt,withdrawnNeighbors,additionalWithdrawals)...))
+                baseMod=clone(simModel)
+                currAgt=filter(x->x.idx==agt.idx,baseMod.agtList)[1]
+                push!(initWithdrawResults,withdraw(baseMod,currAgt))
+            end
+            # now, have the agent calculate its probability of getting less than its deposit
+            resultsStay::Array{Bool}=Bool[]
+            for el in subModResults
+                push!(resultsStay,el[2])
+            end
+            resultsWD::Array{Bool}=Bool[]
+            for el in initWithdrawResults
+                push!(resultsWD,el < agt.deposit)
+            end
 
-        # now calculate the probability of getting less than its deposit
-        probLessThanDepositStay=1-mean(resultsStay)
-        probLessThanDepositWD=1-mean(resultsWD)
-        # now if the probability is greater than the threshold, withdraw
-        if probLessThanDepositWD > probLessThanDepositStay
-            #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay)
-            withdraw(mod,agt)
-        end
+            # now calculate the probability of getting less than its deposit
+            probLessThanDepositStay=1-mean(resultsStay)
+            probLessThanDepositWD=1-mean(resultsWD)
+            # now if the probability is greater than the threshold, withdraw
+            if probLessThanDepositWD > probLessThanDepositStay
+                println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
+                withdraw(mod,agt)
+                halt=false
+            end
 
-        if mod.theBank.vault<=0.0
-            # if the bank is bankrupt, we need to stop the simulation
-            runState=true
-            break
+            if mod.theBank.vault<=0.0
+                # if the bank is bankrupt, we need to stop the simulation
+                runState=true
+                break
+            end
+        #readline()   
+        if  !halt && !runState
+            println("Halting at tick ",t," with vault ",mod.theBank.vault)
         end
-    #readline()    
     end
     return runState
 end

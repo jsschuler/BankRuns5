@@ -58,7 +58,7 @@ end
 # how many rows do we have in the control file?
 while sum(jointFrame.completed) < size(jointFrame,1)
         for c in keys(coreDict)
-            println(sum(jointFrame.completed))
+            #println(sum(jointFrame.completed))
             #println("Core")
             #println(c)
             #println(coreDict[c])
@@ -67,10 +67,10 @@ while sum(jointFrame.completed) < size(jointFrame,1)
             #readline()
             if isnothing(coreDict[c])
                 # if the core dictionary is nothing, we send it the parameters
-                println("Sending Parameters")
-                println("core")
-                println(c)
-                println(coreDict[c])
+                #println("Sending Parameters")
+                #println("core")
+                #println(c)
+                #println(coreDict[c])
                 # read parameters from the first row
                 # step 1: get the index of the first non-started row
                 
@@ -78,10 +78,10 @@ while sum(jointFrame.completed) < size(jointFrame,1)
                 #println(coreDict[c])
                 #println(resultDict==:complete)
             elseif isReady(coreDict[c])
-                println("Ready")
-                println(coreDict[c])
+                #println("Ready")
+                #println(coreDict[c])
                 coreDict[c]=fetch(coreDict[c])
-                println(coreDict[c])
+                #println(coreDict[c])
                 #println(sum(jointFrame.completed) < size(jointFrame,1))
                 #println(sum(jointFrame.completed))
             end
