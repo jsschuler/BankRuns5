@@ -338,8 +338,8 @@ function modelRun(mod::Model)
                 #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
                 withdraw(mod,agt)
                 reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
-                tick=tick,valt=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
-                CSV.write(dataDir*"/"*"bankRunEndogenous."*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
+                tick=t,valt=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
+                CSV.write(dataDir*"/"*"bankRunEndogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
                 halt=false
             end
 
