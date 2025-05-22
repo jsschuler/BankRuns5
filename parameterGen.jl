@@ -65,4 +65,4 @@ jointFrame.completed.=false
 
 # subset to 16 rows
 jointFrame=jointFrame[1:30,:]
-CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,header=true)
+CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,writeheader=true)

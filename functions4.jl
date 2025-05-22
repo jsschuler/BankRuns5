@@ -127,12 +127,13 @@ function exogWithdrawals(mod::Model)
     withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
     # set the banked status to false
     global dataDir
+    global workerCore
     for agt in withdrawList
         #println("Exogenous Withdrawal Agent ",agt.idx)
         agt.banked=false
         filter!(x->x.idx!=agt.idx,mod.theBank.bankingList)
-        reportRow=DataFrame[key=mod.key,agent=agt.idx,exogenous=true,deposit=agt.deposit,tick=0,mod.theBank.vault]
-        CSV.write(dataDir*"/"*"bankRunExogenous.csv",reportRow,header=false,append=true)
+        reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=true,deposit=agt.deposit,tick=0,vault=mod.theBank.vault)
+        CSV.write(dataDir*"/"*"bankRunExogenous."*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
     end
     for agt in withdrawList
         # add the agent to the withdraw history
@@ -335,9 +336,9 @@ function modelRun(mod::Model)
             if probLessThanDepositWD > probLessThanDepositStay
                 #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
                 withdraw(mod,agt)
-                reportRow=DataFrame[key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
-                tick=tick,mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay]
-                CSV.write(dataDir*"/"*"bankRunEndogenous.csv",reportRow,header=false,append=true)
+                reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
+                tick=tick,valt=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
+                CSV.write(dataDir*"/"*"bankRunEndogenous."*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
                 halt=false
             end
 
@@ -418,4 +419,10 @@ function modelCall()
                 fetch(proc2)
         end
     return nothing
+end
+
+# we need a function to set a global variable for each worker indicating its core
+function myCore(c)
+    global workerCore
+    workerCore=c
 end

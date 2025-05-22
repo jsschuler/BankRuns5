@@ -16,6 +16,10 @@ using Distributed
 @everywhere using JLD2
 @everywhere using Dates
 cores=16
+@everywhere workerCore=1
+for c in 2:cores
+    @spawnat c myCore(c)
+end
 # major parameters
 @everywhere depth::Int64=1000
 
@@ -87,4 +91,4 @@ while sum(jointFrame.completed) < size(jointFrame,1)
             end
         end    
 end
-CSV.write(dataDir*"/"*"bankRunParametersFin.csv",jointFrame,header=true)
+CSV.write(dataDir*"/"*"bankRunParametersFin.csv",jointFrame,writeheader=true)
