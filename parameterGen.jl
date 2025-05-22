@@ -1,7 +1,7 @@
 ################################################################################
 #              Replacement Bank Run Model                                      #
 #               (networked)                                                    #
-#               June 2022                                                      #
+#               May 2025                                                       #
 #               John S. Schuler                                                #
 #               Parameter Sweep Generation Code                                #
 ################################################################################
@@ -38,76 +38,26 @@ runSize=100
 #            collect(1000:1000:5000),dims=1)
 
 agtCnts=[1000]
+#reserveRatio=collect(.05:.05:.2)
+reserveRatio=[.05]
+#depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
+depositDistributions=Distribution[Pareto(.5,10)]
+graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .2)]
 
-reserveRatio=collect(.05:.05:.9)
+#exogenousProb=Distribution[Binomial(1000,0.1),Binomial(1000,.2),Binomial(1000,.3)]
+exogenousProb=Distribution[Binomial(1000,0.1)]
+seed1=repeat(sample(1:1000000,seedRun,replace=false),seedRun)
+seedIterations=DataFrame(iteration=1:runSize)
+seedFrame=DataFrame(seed1=seed1)
+depFrame=DataFrame(depositDist=depositDistributions)
+graphFrame=DataFrame(network=graphTypes)
+exogProbFrame=DataFrame(withdrawRV=exogenousProb)
+reserveFrame=DataFrame(reserveRatio=reserveRatio)
 
+jointFrame=crossjoin(seedFrame,seedIterations,depFrame,graphFrame,exogProbFrame,reserveFrame)
 
-graphParamA=collect(.05:.1:.95)
-graphParamB=collect(.05:.1:.95)
-exogP=collect(.05:.05:.5)
-depth=[10000]
-depsoitDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5.0,10)]
-
-
-col17=[]
-# take a random sample of a Cartesian join
-
-
-    for t in 1:seedRun
-        push!(col1,sample(agtCnts,1)[1])
-        push!(col2,sample(withdrawalPeriods,1)[1])
-        push!(col3,sample(reserveRatio,1)[1])
-        push!(col4,sample(loP,1)[1])
-        push!(col5,sample(hiP,1)[1])
-        push!(col6,sample(depositParam,1)[1])
-        push!(col7,sample(graphType,1)[1])
-        push!(col8,sample(graphParamA,1)[1])
-        push!(col9,sample(graphParamB,1)[1])
-        push!(col10,sample(exogP,1)[1])
-        push!(col11,sample(depth,1)[1])
-        push!(col12,sample(["Gamma","Levy"],1)[1])
-        push!(col13,sample(.5:.5:20,1)[1])
-        push!(col14,sample(.5:.5:20,1)[1])
-        push!(col15,sample(0:20,1)[1])
-        push!(col16,sample(0:0.15:.9,1)[1])
-        push!(col17,sample([true,false],1)[1])
-    end
-
-println(length(col1))
-
-currTime=now()
-
-ctrlFrame=DataFrame()
-ctrlFrame[!,"dateTime"]=repeat([currTime],runSize*seedRun)
-ctrlFrame[!,"seed1"]=repeat(sample(1:(100*runSize*seedRun),seedRun,replace=false),runSize)
-ctrlFrame[!,"seed2"]=sample(1:(100*runSize*seedRun),runSize*seedRun,replace=false)
-ctrlFrame[!,"key"]=string.(ctrlFrame[!,"dateTime"],":",ctrlFrame[!,"seed1"],":",ctrlFrame[!,"seed2"])
-ctrlFrame[!,"agtCnt"]=repeat(col1,runSize)
-ctrlFrame[!,"withdrawalPeriods"]=repeat(col2,runSize)
-ctrlFrame[!,"reserveRatio"]=repeat(col3,runSize)
-ctrlFrame[!,"loP"]=repeat(col4,runSize)
-ctrlFrame[!,"hiP"]=repeat(col5,runSize)
-ctrlFrame[!,"depositParam"]=repeat(col6,runSize)
-ctrlFrame[!,"graphType"]=repeat(col7,runSize)
-ctrlFrame[!,"graphParamA"]=repeat(col8,runSize)
-ctrlFrame[!,"graphParamB"]=repeat(col9,runSize)
-ctrlFrame[!,"exogP"]=repeat(col10,runSize)
-ctrlFrame[!,"depth"]=repeat(col11,runSize)
-ctrlFrame[!,"distributionType"]=repeat(col12,runSize)
-ctrlFrame[!,"distributionParamA"]=repeat(col13,runSize)
-ctrlFrame[!,"distributionParamB"]=repeat(col14,runSize)
-ctrlFrame[!,"neighborDepth"]=repeat(col15,runSize)
-ctrlFrame[!,"depositInsurance"]=repeat(col16,runSize)
-ctrlFrame[!,"altInsurance"]=repeat(col17,runSize)
-ctrlFrame[!,"complete"]=repeat([false],runSize*seedRun)
-#println(ctrlFrame[1:10,:])
-ctrlName="runCtrl_"*Dates.format(now(),"yyyymmddHHMMSS")*".jld2"
-save_object(ctrlName,ctrlFrame)
-CSV.write(dataDir*"/modRun"*ctrlFrame[1,:key]*".csv",ctrlFrame)
-# now generate the bash file
-
-sFile="script"*ctrlFrame[1,:key]*".bash"
-
-    open(sFile,"w") do file
-        write(sFile,repeat("/opt/julia-1.7.3/bin/julia main000001.jl "*ctrlName*" \n",seedRun*runSize))
-end
+# now we need to generate the parameters
+jointFrame.seed2=sample(1:1000000,size(jointFrame,1),replace=false)
+jointFrame.key=string(Dates.now())*"-".*string.(jointFrame.seed1).*"-".*string.(jointFrame.seed2)
+jointFrame.started.=false
+jointFrame.completed.=false

@@ -43,6 +43,8 @@ cores=16
 # now, the structs are generated once and for all
 # so we can use processes based parallelism 
 
+# bring in the parameter generation code
+include("parameterGen.jl")
 
 
 # now we need to code the sweep to use all cores
