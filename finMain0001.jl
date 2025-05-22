@@ -65,14 +65,19 @@ while sum(jointFrame.completed) < size(jointFrame,1)
                 println("Sending Parameters")
                 println("core")
                 println(c)
+                println(coreDict[c])
                 # read parameters from the first row
                 # step 1: get the index of the first non-started row
                 
                 coreDict[c]=@spawnat c modelCall()
+                println(coreDict[c])
                 #println(resultDict==:complete)
             elseif isReady(coreDict[c])
                 println("Ready")
+                println(coreDict[c])
                 resultDict[c]=fetch(coreDict[c])
+                println(sum(jointFrame.completed) < size(jointFrame,1))
+                println(sum(jointFrame.completed))
             end
         end    
    

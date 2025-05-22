@@ -379,5 +379,5 @@ function modelCall()
             end
             # now we need to fetch the result              
             fetch(proc2)
-    return :complete
+    return nothing
 end
