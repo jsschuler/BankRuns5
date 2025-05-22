@@ -1,7 +1,8 @@
 # initialization functions
 
 
-function modelGen(seed1::Int64,
+function modelGen(key::String,
+                  seed1::Int64,
                   seed2::Int64,
                   agtCnt::Int64,
                   probThresh::Float64,
@@ -30,6 +31,7 @@ function modelGen(seed1::Int64,
         Agent[]
     )
     mod=Model(
+        key,
         agtList,
         reserveRatio,
         theBank,
@@ -124,10 +126,13 @@ function exogWithdrawals(mod::Model)
     # get the list of agents that will withdraw
     withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
     # set the banked status to false
+    global dataDir
     for agt in withdrawList
-        println("Exogenous Withdrawal Agent ",agt.idx)
+        #println("Exogenous Withdrawal Agent ",agt.idx)
         agt.banked=false
         filter!(x->x.idx!=agt.idx,mod.theBank.bankingList)
+        reportRow=DataFrame[key=mod.key,agent=agt.idx,exogenous=true,deposit=agt.deposit,tick=0,mod.theBank.vault]
+        CSV.write(dataDir*"/"*"bankRunExogenous.csv",reportRow,header=false,append=true)
     end
     for agt in withdrawList
         # add the agent to the withdraw history
@@ -273,6 +278,12 @@ function modelRun(mod::Model)
     halt::Bool=false
     # now, randomize the order of the agents still banking
     t=0
+    if mod.theBank.vault<=0.0
+        # if the bank is bankrupt, we need to stop the simulation
+        runState=true
+        #println("Bankrupt at tick ",t," with vault ",mod.theBank.vault)
+        return runState
+    end
     while !halt && !runState
         halt=true
         t=t+1
@@ -320,9 +331,13 @@ function modelRun(mod::Model)
             probLessThanDepositStay=1-mean(resultsStay)
             probLessThanDepositWD=1-mean(resultsWD)
             # now if the probability is greater than the threshold, withdraw
+            global dataDir
             if probLessThanDepositWD > probLessThanDepositStay
-                println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
+                #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
                 withdraw(mod,agt)
+                reportRow=DataFrame[key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
+                tick=tick,mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay]
+                CSV.write(dataDir*"/"*"bankRunEndogenous.csv",reportRow,header=false,append=true)
                 halt=false
             end
 
@@ -333,9 +348,9 @@ function modelRun(mod::Model)
             end
             #readline()   
         end
-        if  !halt && !runState
-            println("Halting at tick ",t," with vault ",mod.theBank.vault)
-        end
+        #if  !halt && !runState
+        #    println("Halting at tick ",t," with vault ",mod.theBank.vault)
+        #end
     end
     return runState
 end
@@ -384,7 +399,8 @@ function modelCall()
         if !isnothing(results)
             startIndex=results[1]
             currentIndex=results[2]
-            mod=modelGen(startIndex[:seed1],
+            mod=modelGen(startIndex[:key],
+                         startIndex[:seed1],
                          startIndex[:seed2],
                                 1000,
                                 .1,

@@ -34,6 +34,7 @@ mutable struct simBank
 end
 
 mutable struct Model
+    key::String
     agtList::Array{Agent}
     reserveRatio::Float64
     theBank::Bank

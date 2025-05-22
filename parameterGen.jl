@@ -26,7 +26,7 @@ using CSV
 
 
 Random.seed!(12346572)
-dataDir="../BankRunData"
+@everywhere dataDir="../BankRunData"
 # how many model initializations to run?
 seedRun=10
 # and how many times to run each initialization?
@@ -65,3 +65,4 @@ jointFrame.completed.=false
 
 # subset to 16 rows
 jointFrame=jointFrame[1:30,:]
+CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,header=true)

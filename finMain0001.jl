@@ -86,5 +86,5 @@ while sum(jointFrame.completed) < size(jointFrame,1)
                 #println(sum(jointFrame.completed))
             end
         end    
-   
 end
+CSV.write(dataDir*"/"*"bankRunParametersFin.csv",jointFrame,header=true)
