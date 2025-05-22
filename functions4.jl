@@ -340,11 +340,31 @@ function isReady(arg::Nothing)
 end
 
 # we need a function that calls the model generation function from other workers and fetches the result
-function modelCall()
+function rowPull()
     global jointFrame
+    currentIndex=sum(jointFrame.started) 
     startIndex=collect(1:size(jointFrame)[1])[jointFrame.started.==false][1]
+    jointFrame[currentIndex+1,:started]=true
+    return (jointFrame[currentIndex+1,:],currentIndex+1)          
+end
 
-    proc=@spawnat 1 modelGen(startIndex[:seed1],
+function checkOff(currentIndex)
+    global jointFrame
+    # check off the row
+    jointFrame[currentIndex,:completed]=true
+end
+
+function modelCall()
+    # pull the first row of data
+        proc=@spawnat 1 rowPull()
+        while !isReady(proc)
+            sleep(1)
+        end
+        # now we need to fetch the result
+        results=fetch(proc)
+        startIndex=results[1]
+        currentIndex=results[2]
+        mod=modelGen(startIndex[:seed1],
                             1000,
                             .1,
                             startIndex[:network],
@@ -352,12 +372,12 @@ function modelCall()
                             startIndex[:reserveRatio],
                             startIndex[:depositInsuranceQuantile],
                             startIndex[:withdrawRV])
-    while !isReady(proc)
-        sleep(1)
-    end
-    # now we need to fetch the result
-    mod=fetch(proc)
-    rMod=modelRun(mod)
+            rMod=modelRun(mod)
+            proc2=@spawnat 1 checkOff(currentIndex)
+            while !isReady(proc2)
+                sleep(1)
+            end
+            # now we need to fetch the result              
+            fetch(proc2)
     return :complete
-                            
 end

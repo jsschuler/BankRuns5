@@ -56,7 +56,9 @@ for j in 2:cores
     resultDict[j]=nothing
     rowDict[j]=nothing
 end
-while true
+
+# how many rows do we have in the control file?
+while sum(jointFrame.completed) < size(jointFrame,1)
         for c in keys(coreDict)
             if isnothing(coreDict[c])
                 # if the core dictionary is nothing, we send it the parameters
@@ -66,14 +68,12 @@ while true
                 # read parameters from the first row
                 # step 1: get the index of the first non-started row
                 
-                rowDict[c]==collect(1:size(jointFrame)[1])[jointFrame.started.==false][1]
-                startVec=jointFrame[startIndex,:]
-                coreDict[c]=@spawnat c include("modelStep.jl")
+                coreDict[c]=@spawnat c modelCall()
                 #println(resultDict==:complete)
             elseif isReady(coreDict[c])
                 println("Ready")
                 resultDict[c]=fetch(coreDict[c])
             end
-        end
-
+        end    
+   
 end

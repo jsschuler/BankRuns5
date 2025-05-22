@@ -62,3 +62,6 @@ jointFrame.seed2=sample(1:1000000,size(jointFrame,1),replace=false)
 jointFrame.key=string(Dates.now())*"-".*string.(jointFrame.seed1).*"-".*string.(jointFrame.seed2)
 jointFrame.started.=false
 jointFrame.completed.=false
+
+# subset to 16 rows
+jointFrame=jointFrame[1:16,:]
