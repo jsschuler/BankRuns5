@@ -41,12 +41,12 @@ agtCnts=[1000]
 #reserveRatio=collect(.05:.05:.2)
 reserveRatio=[.25]
 #depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
-depositDistributions=Distribution[Pareto(1.0,10)]
+depositDistributions=Distribution[Pareto(3.0,10)]
 depositInsuranceQuantile=[0.0]
 graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .2)]
 
 #exogenousProb=Distribution[Binomial(1000,0.1),Binomial(1000,.2),Binomial(1000,.3)]
-exogenousProb=Distribution[Binomial(1000,0.1)]
+exogenousProb=Distribution[Binomial(1000,0.05)]
 seed1=repeat(sample(1:1000000,seedRun,replace=false),seedRun)
 seedIterations=DataFrame(iteration=1:runSize)
 seedFrame=DataFrame(seed1=seed1)
@@ -65,4 +65,4 @@ jointFrame.completed.=false
 
 # subset to 16 rows
 jointFrame=jointFrame[1:30,:]
-CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,writeheader=true)
+CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,writeheader=true,append=false)
