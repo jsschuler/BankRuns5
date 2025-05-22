@@ -283,7 +283,7 @@ function modelRun(mod::Model)
     if mod.theBank.vault<=0.0
         # if the bank is bankrupt, we need to stop the simulation
         runState=true
-        println("Bankrupt at tick ",t," with vault ",mod.theBank.vault)
+        #println("Bankrupt at tick ",t," with vault ",mod.theBank.vault)
         return runState
     end
     while !halt && !runState
@@ -350,9 +350,9 @@ function modelRun(mod::Model)
             end
             #readline()   
         end
-        if  !halt && !runState
-            println("Halting at tick ",t," with vault ",mod.theBank.vault)
-        end
+        #if  !halt && !runState
+        #    println("Halting at tick ",t," with vault ",mod.theBank.vault)
+        #end
     end
     return runState
 end
@@ -429,10 +429,5 @@ end
 function myCore(c)
     global workerCore
     workerCore=c
-    println("Worker Core is ",workerCore)
-end
-
-@everywhere function checkCore()
-    global workerCore
-    println("Worker Core is ",workerCore)
+    #println("Worker Core is ",workerCore)
 end
