@@ -338,3 +338,26 @@ end
 function isReady(arg::Nothing)
     return false
 end
+
+# we need a function that calls the model generation function from other workers and fetches the result
+function modelCall()
+    global jointFrame
+    startIndex=collect(1:size(jointFrame)[1])[jointFrame.started.==false][1]
+
+    proc=@spawnat 1 modelGen(startIndex[:seed1],
+                            1000,
+                            .1,
+                            startIndex[:network],
+                            startIndex[:depositDist],
+                            startIndex[:reserveRatio],
+                            startIndex[:depositInsuranceQuantile],
+                            startIndex[:withdrawRV])
+    while !isReady(proc)
+        sleep(1)
+    end
+    # now we need to fetch the result
+    mod=fetch(proc)
+    rMod=modelRun(mod)
+    return :complete
+                            
+end

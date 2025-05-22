@@ -50,9 +50,11 @@ include("parameterGen.jl")
 # now we need to code the sweep to use all cores
 coreDict=Dict()
 resultDict=Dict()
+rowDict=Dict()
 for j in 2:cores
     coreDict[j]=nothing
     resultDict[j]=nothing
+    rowDict[j]=nothing
 end
 while true
         for c in keys(coreDict)
@@ -61,6 +63,11 @@ while true
                 println("Sending Parameters")
                 println("core")
                 println(c)
+                # read parameters from the first row
+                # step 1: get the index of the first non-started row
+                
+                rowDict[c]==collect(1:size(jointFrame)[1])[jointFrame.started.==false][1]
+                startVec=jointFrame[startIndex,:]
                 coreDict[c]=@spawnat c include("modelStep.jl")
                 #println(resultDict==:complete)
             elseif isReady(coreDict[c])
