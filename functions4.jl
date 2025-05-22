@@ -123,7 +123,7 @@ function exogWithdrawals(mod::Model)
     withdrawList=sample(mod.agtList,numWithdrawals,replace=false)
     # set the banked status to false
     for agt in withdrawList
-        println("Exogenous Withdrawal Agent ",agt.idx)
+        #println("Exogenous Withdrawal Agent ",agt.idx)
         agt.banked=false
         filter!(x->x.idx!=agt.idx,mod.theBank.bankingList)
     end
@@ -312,7 +312,7 @@ function modelRun(mod::Model)
         probLessThanDepositWD=1-mean(resultsWD)
         # now if the probability is greater than the threshold, withdraw
         if probLessThanDepositWD > probLessThanDepositStay
-            println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay)
+            #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay)
             withdraw(mod,agt)
         end
 
@@ -342,10 +342,15 @@ end
 # we need a function that calls the model generation function from other workers and fetches the result
 function rowPull()
     global jointFrame
+    
     currentIndex=sum(jointFrame.started) 
-    startIndex=collect(1:size(jointFrame)[1])[jointFrame.started.==false][1]
-    jointFrame[currentIndex+1,:started]=true
-    return (jointFrame[currentIndex+1,:],currentIndex+1)          
+    if currentIndex==size(jointFrame)[1]
+        return nothing
+    else
+        startIndex=collect(1:size(jointFrame)[1])[jointFrame.started.==false][1]
+        jointFrame[currentIndex+1,:started]=true
+        return (jointFrame[currentIndex+1,:],currentIndex+1)
+    end          
 end
 
 function checkOff(currentIndex)
@@ -362,22 +367,24 @@ function modelCall()
         end
         # now we need to fetch the result
         results=fetch(proc)
-        startIndex=results[1]
-        currentIndex=results[2]
-        mod=modelGen(startIndex[:seed1],
-                            1000,
-                            .1,
-                            startIndex[:network],
-                            startIndex[:depositDist],
-                            startIndex[:reserveRatio],
-                            startIndex[:depositInsuranceQuantile],
-                            startIndex[:withdrawRV])
-            rMod=modelRun(mod)
-            proc2=@spawnat 1 checkOff(currentIndex)
-            while !isReady(proc2)
-                sleep(1)
-            end
-            # now we need to fetch the result              
-            fetch(proc2)
+        if !isnothing(results)
+            startIndex=results[1]
+            currentIndex=results[2]
+            mod=modelGen(startIndex[:seed1],
+                                1000,
+                                .1,
+                                startIndex[:network],
+                                startIndex[:depositDist],
+                                startIndex[:reserveRatio],
+                                startIndex[:depositInsuranceQuantile],
+                                startIndex[:withdrawRV])
+                rMod=modelRun(mod)
+                proc2=@spawnat 1 checkOff(currentIndex)
+                while !isReady(proc2)
+                    sleep(1)
+                end
+                # now we need to fetch the result              
+                fetch(proc2)
+        end
     return nothing
 end

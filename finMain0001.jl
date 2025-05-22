@@ -53,13 +53,18 @@ resultDict=Dict()
 rowDict=Dict()
 for j in 2:cores
     coreDict[j]=nothing
-    resultDict[j]=nothing
-    rowDict[j]=nothing
 end
 
 # how many rows do we have in the control file?
 while sum(jointFrame.completed) < size(jointFrame,1)
         for c in keys(coreDict)
+            println(sum(jointFrame.completed))
+            #println("Core")
+            #println(c)
+            #println(coreDict[c])
+            #println(isReady(coreDict[c]))
+            #println(isnothing(coreDict[c]))
+            #readline()
             if isnothing(coreDict[c])
                 # if the core dictionary is nothing, we send it the parameters
                 println("Sending Parameters")
@@ -70,14 +75,15 @@ while sum(jointFrame.completed) < size(jointFrame,1)
                 # step 1: get the index of the first non-started row
                 
                 coreDict[c]=@spawnat c modelCall()
-                println(coreDict[c])
+                #println(coreDict[c])
                 #println(resultDict==:complete)
             elseif isReady(coreDict[c])
                 println("Ready")
                 println(coreDict[c])
-                resultDict[c]=fetch(coreDict[c])
-                println(sum(jointFrame.completed) < size(jointFrame,1))
-                println(sum(jointFrame.completed))
+                coreDict[c]=fetch(coreDict[c])
+                println(coreDict[c])
+                #println(sum(jointFrame.completed) < size(jointFrame,1))
+                #println(sum(jointFrame.completed))
             end
         end    
    
