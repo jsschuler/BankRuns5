@@ -25,7 +25,7 @@ using CSV
 # GRAPHS for each graph, a and b in (0,1)
 
 
-
+Random.seed!(12346572)
 dataDir="../BankRunData"
 # how many model initializations to run?
 seedRun=10

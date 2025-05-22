@@ -38,7 +38,8 @@ mutable struct Model
     reserveRatio::Float64
     theBank::Bank
     depositInsurance::Float64
-    seed::Int64
+    seed1::Int64
+    seed2::Int64
     depositDistribution::Distribution
     network::Graph
     probThresh::Float64

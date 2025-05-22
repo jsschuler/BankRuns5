@@ -1,7 +1,8 @@
 # initialization functions
 
 
-function modelGen(seed::Int64,
+function modelGen(seed1::Int64,
+                  seed2::Int64,
                   agtCnt::Int64,
                   probThresh::Float64,
                   network::SimpleGraph{Int64},
@@ -10,6 +11,7 @@ function modelGen(seed::Int64,
                   depositInsurance::Float64,
                   exogProb::Distribution)
     # generate the deposits
+    Random.seed!(seed1)
     deposits=rand(depositDistribution,agtCnt)
     # generate the agents
     agtList::Array{Agent}=Agent[]
@@ -32,7 +34,8 @@ function modelGen(seed::Int64,
         reserveRatio,
         theBank,
         depositInsurance,
-        seed,
+        seed1,
+        seed2,
         depositDistribution,
         network,
         probThresh,
@@ -116,7 +119,6 @@ end
 
 # we need a function to withdraw exogenously
 function exogWithdrawals(mod::Model)
-
     # get the number of agents that will withdraw
     numWithdrawals=rand(mod.exogProb,1)[1]
     # get the list of agents that will withdraw
@@ -260,7 +262,7 @@ end
 function modelRun(mod::Model)
     runState::Bool=false
     # set the seed
-    Random.seed!(mod.seed)
+    Random.seed!(mod.seed2)
     # make a copy of the model
     simModel=clone(mod)
 
@@ -371,6 +373,7 @@ function modelCall()
             startIndex=results[1]
             currentIndex=results[2]
             mod=modelGen(startIndex[:seed1],
+                         startIndex[:seed2],
                                 1000,
                                 .1,
                                 startIndex[:network],
