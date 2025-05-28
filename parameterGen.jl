@@ -10,6 +10,8 @@ using DataFrames
 using JLD2
 using Dates
 using CSV
+using Random
+
 ##### PARAMETERS ######
 # SEED
 # AGENT COUNT
