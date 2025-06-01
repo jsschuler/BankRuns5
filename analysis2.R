@@ -31,7 +31,7 @@ for (el in resultList){
 rbindlist(endoDatList) -> endogenousDat
 rbindlist(exoDatList) -> exogenousDat
 rbindlist(resultDatList) -> resultDat
-
+nrow(resultDat)
 # now add names
 c("key","agent","exogenous","deposit","tick","vault") -> names(exogenousDat)
 
