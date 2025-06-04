@@ -7,7 +7,9 @@ setwd("~/ResearchCode/BankRunData")
 
 # first read in control file
 read.csv("bankRunParametersInit.csv") -> control
+read.csv("supplemental.csv") -> auxil
 
+merge(control,auxil,by="key") -> control
 list.files()[grepl("Endogenous",list.files())] -> endoList
 list.files()[grepl("Exogenous",list.files())] -> exoList
 list.files()[grepl("Results",list.files())] -> resultList
@@ -50,5 +52,10 @@ merge(exoWD,endoWD,by="key",all.x=TRUE) -> jointDat
 jointDat$endoCnt <- coalesce(jointDat$endoCnt,0)
 
 merge(jointDat,resultDat,by="key") -> finDat
+
+merge(control,finDat,by="key") -> finDat
+
+table(finDat$theta,finDat$result)
+
 
 ggplot(data=finDat) + geom_point(aes(x=exoCnt,y=endoCnt,color=result))
