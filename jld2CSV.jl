@@ -44,8 +44,8 @@ finFrame.seed1=jointFrame.seed1
 finFrame.seed2=jointFrame.seed2
 finFrame.reserveRatio=jointFrame.reserveRatio
 finFrame.depositInsuranceQuantile=jointFrame.depositInsuranceQuantile
-
-# now write out to DSV
+finFrame.centrality=betweenness_centrality.(jointFrame.network)
+# now write out to CSV
 CSV.write("../bankRunData/supplemental.csv",finFrame,writeheader=true,append=false)
 
 # graph information
