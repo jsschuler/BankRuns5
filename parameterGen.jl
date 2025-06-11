@@ -11,7 +11,8 @@ using JLD2
 using Dates
 using CSV
 using Random
-
+using Distributions
+using Graphs
 ##### PARAMETERS ######
 # SEED
 # AGENT COUNT
@@ -28,11 +29,11 @@ using Random
 
 genSeed=12346572
 Random.seed!(genSeed)
-@everywhere dataDir="../BankRunData"
+dataDir="../BankRunData"
 # how many model initializations to run?
-seedRun=10
+seedRun=1
 # and how many times to run each initialization?
-runSize=20
+runSize=5
 
 
 #agtCnts=cat(collect(10:10:100),
@@ -70,6 +71,7 @@ jointFrame.key=string(Dates.now())*"-".*string.(jointFrame.seed1).*"-".*string.(
 jointFrame.started.=false
 jointFrame.completed.=false
 save_object("../BankRunData/key"*string(genSeed)*string(Dates.now())*".jld2", jointFrame)
+println(jointFrame)
 # subset to 16 rows
 #jointFrame=jointFrame[1:30,:]
 CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame[:,[:key,:started,:completed]],writeheader=true,append=false)
