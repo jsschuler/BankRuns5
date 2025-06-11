@@ -11,7 +11,7 @@ using Graphs
 # we need a function that turns an array of tuples into a matrix
 
 
-dataSource="../BankRunData/key123465722025-05-28T14:00:33.369.jld2"
+dataSource="../BankRunData/"
 tst= jldopen(dataSource, "r")
 jointFrame=tst["single_stored_object"]
 
