@@ -5,14 +5,14 @@
 #               John S. Schuler                                                #
 #               Parameter Sweep Generation Code                                #
 ################################################################################
-using StatsBase
-using DataFrames
-using JLD2
-using Dates
-using CSV
-using Random
-using Distributions
-using Graphs
+#using StatsBase
+#using DataFrames
+#using JLD2
+#using Dates
+#using CSV
+#using Random
+#using Distributions
+#using Graphs
 ##### PARAMETERS ######
 # SEED
 # AGENT COUNT
@@ -29,7 +29,7 @@ using Graphs
 
 genSeed=12346572
 Random.seed!(genSeed)
-dataDir="../BankRunData"
+@everywhere dataDir="../BankRunData"
 # how many model initializations to run?
 seedRun=1
 # and how many times to run each initialization?

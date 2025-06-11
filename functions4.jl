@@ -335,7 +335,7 @@ function modelRun(mod::Model)
             # now if the probability is greater than the threshold, withdraw
             global dataDir
             if probLessThanDepositWD > probLessThanDepositStay || probLessThanDepositWD==0.0
-                println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
+                #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
                 withdraw(mod,agt)
                 reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
                 tick=t,valt=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
