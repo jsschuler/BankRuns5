@@ -420,7 +420,7 @@ function modelCall()
                 fetch(proc2)
         end
         # write out model results
-        resultRow=DataFrame(key=mod.key,result=rMod)
+        resultRow=DataFrame(key=results[1][:key],result=rMod)
         CSV.write(dataDir*"/"*"bankRunResults"*string(workerCore)*".csv",resultRow,writeheader=false,append=true)
     return nothing
 end

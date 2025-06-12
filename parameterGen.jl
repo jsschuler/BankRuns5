@@ -53,7 +53,7 @@ depositDistributions=paretoGen.(collect(.5:.5:2.5))
 depositInsuranceQuantile=[0.0]
 graphParams1=[10,20,50,500,1000]
 graphParams2=[.2, .2, .2, .2, 0.0]
-graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .2),newman_watts_strogatz(1000, 20, .2),newman_watts_strogatz(1000, 50, .2),newman_watts_strogatz(1000, 500, .2),newman_watts_strogatz(1000, 1000, 0.0)]
+graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .2),newman_watts_strogatz(1000, 20, .2),newman_watts_strogatz(1000, 50, .2),newman_watts_strogatz(1000, 500, .2),newman_watts_strogatz(1000, 999, 0.0)]
 
 #exogenousProb=Distribution[Binomial(1000,0.1),Binomial(1000,.2),Binomial(1000,.3)]
 exogenousProb=Distribution[Binomial(1000,0.05)]
