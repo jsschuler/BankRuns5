@@ -330,6 +330,7 @@ function modelRun(mod::Model)
             end
 
             # now calculate the probability of getting less than its deposit
+            # should this be 1-?
             probLessThanDepositStay=mean(resultsStay)
             probLessThanDepositWD=mean(resultsWD)
             # now if the probability is greater than the threshold, withdraw
@@ -420,8 +421,11 @@ function modelCall()
                 fetch(proc2)
         end
         # write out model results
+        if !isnothing(results)
         resultRow=DataFrame(key=results[1][:key],result=rMod)
         CSV.write(dataDir*"/"*"bankRunResults"*string(workerCore)*".csv",resultRow,writeheader=false,append=true)
+        end
+
     return nothing
 end
 

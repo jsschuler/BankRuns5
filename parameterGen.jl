@@ -13,6 +13,12 @@
 #using Random
 #using Distributions
 #using Graphs
+
+# we need to sweep for parameters with the following behavior:
+# Under the assumption of perfect information, the probability of bank failure is 0. 
+
+
+
 ##### PARAMETERS ######
 # SEED
 # AGENT COUNT
@@ -49,7 +55,12 @@ function paretoGen(alpha)
     return Pareto(alpha,10)
 end
 
-depositDistributions=paretoGen.(collect(.5:.5:2.5))
+function logNormalGen(mu, sigma)
+    return LogNormal(mu, sigma)
+end
+
+#depositDistributions=paretoGen.(collect(.5:.5:2.5))
+depositDistributions=logNormalGen.([1.0,1.0,1.0,1.0,1.0],collect(.5:.5:2.5))
 depositInsuranceQuantile=[0.0]
 graphParams1=[10,20,50,500,1000]
 graphParams2=[.2, .2, .2, .2, 0.0]

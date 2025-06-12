@@ -7,9 +7,9 @@ setwd("~/ResearchCode/BankRunData")
 
 # first read in control file
 read.csv("bankRunParametersInit.csv") -> control
-read.csv("supplemental.csv") -> auxil
+#read.csv("supplemental.csv") -> auxil
 
-merge(control,auxil,by="key") -> control
+#merge(control,auxil,by="key") -> control
 list.files()[grepl("Endogenous",list.files())] -> endoList
 list.files()[grepl("Exogenous",list.files())] -> exoList
 list.files()[grepl("Results",list.files())] -> resultList
@@ -41,7 +41,7 @@ c("key","agent","exogenous","deposit","tick","valt","wdProb","stayProb") -> name
 
 c("key","result") -> names(resultDat)
 
-table(resultDat$result) / nrow(resultDat)
+nrow(resultDat)
 
 # plot exogenous vs endogenous withdrawals
 
@@ -57,5 +57,8 @@ merge(control,finDat,by="key") -> finDat
 
 table(finDat$theta,finDat$result)
 
+table(finDat$result)
 
 ggplot(data=finDat) + geom_point(aes(x=exoCnt,y=endoCnt,color=result))
+
+finDat %>% group_by(result,exoCnt,endoCnt) %>% summarise(cnt=n()) %>% arrange(exoCnt,endoCnt)
