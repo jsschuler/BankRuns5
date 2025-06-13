@@ -13,11 +13,12 @@ read.csv("bankRunParametersInit.csv") -> control
 list.files()[grepl("Endogenous",list.files())] -> endoList
 list.files()[grepl("Exogenous",list.files())] -> exoList
 list.files()[grepl("Results",list.files())] -> resultList
+list.files()[grepl("agents",list.files())] -> agentsList
 
 endoDatList <- list()
 exoDatList <- list()
 resultDatList <- list()
-
+agentsDatList <- list()
 for (el in endoList){
   read.csv(el,header=FALSE) -> endoDatList[[length(endoDatList)+1]]
 }
@@ -30,9 +31,15 @@ for (el in resultList){
   read.csv(el,header=FALSE) -> resultDatList[[length(resultDatList)+1]]
 }
 
+for (el in agentsList){
+  read.csv(el,header=FALSE) -> agentsDatList[[length(agentsDatList)+1]]
+}
+
+
 rbindlist(endoDatList) -> endogenousDat
 rbindlist(exoDatList) -> exogenousDat
 rbindlist(resultDatList) -> resultDat
+rbindlist(agentsDatList) -> agentsDat
 nrow(resultDat)
 # now add names
 c("key","agent","exogenous","deposit","tick","vault") -> names(exogenousDat)
@@ -41,8 +48,18 @@ c("key","agent","exogenous","deposit","tick","valt","wdProb","stayProb") -> name
 
 c("key","result") -> names(resultDat)
 
+c("key","idx","deposit") -> names(agentsDat) 
 nrow(resultDat)
 
+# Let's understand the agent deposit distribution
+
+agentsDat %>% group_by(key) %>% summarise(totDeposit=sum(deposit)) -> totDeposit
+totDeposit$origVault <- .25*totDeposit$totDeposit
+merge(agentsDat,totDeposit,by="key") -> agentsDeposits
+
+agentsDeposits$vaultPortion <- agentsDeposits$deposit / agentsDeposits$origVault
+agentsDeposits$depPortion <- agentsDeposits$deposit / agentsDeposits$totDeposit
+round(quantile(agentsDeposits$vaultPortion,c(0,0.01,.05,.25,.5,.75,.95,.99,1)),10)
 # plot exogenous vs endogenous withdrawals
 
 exogenousDat %>% group_by(key) %>% summarise(exoCnt=n()) -> exoWD
@@ -59,10 +76,12 @@ merge(control,finDat,by="key") -> finDat
 endogenousDat %>% group_by(key) %>% summarise(vault=min(valt)) %>% 
   transform(fail2=if_else(vault <= 0,TRUE,FALSE)) -> tst
 
-table(finDat$theta,finDat$result)
+exogenousDat %>% group_by(key) %>% summarise(minVault=min(vault),maxVault=max(vault)) -> exogSmry
+
+#table(finDat$theta,finDat$result)
 
 table(finDat$result)
-
+ggplot(data=finDat) + geom_histogram(aes(x=exoCnt,fill=result))
 ggplot(data=finDat) + geom_point(aes(x=exoCnt,y=endoCnt,color=result))
 
 finDat %>% group_by(result,exoCnt,endoCnt) %>% summarise(cnt=n()) %>% arrange(exoCnt,endoCnt)

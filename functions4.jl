@@ -20,7 +20,7 @@ function modelGen(key::String,
         push!(agtList,Agent(i,deposits[i],true))
     end
 
-    agtDF=DataFrame(idx=1:agtCnt,deposit=deposits)
+    agtDF=DataFrame(key=key,idx=1:agtCnt,deposit=deposits)
 
     CSV.write(dataDir*"/"*"agents"*string(workerCore)*".csv",agtDF,writeheader=false,append=true)
 
@@ -349,12 +349,15 @@ function modelRun(mod::Model)
             if probLessThanDepositWD > probLessThanDepositStay || probLessThanDepositWD==0.0
                 #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
                 withdraw(mod,agt)
-                reportRow=DataFrame(key=mod.key,agent=agt.idx,exogenous=false,deposit=agt.deposit,
-                tick=t,valt=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
+                reportRow=DataFrame(key=mod.key,agent=agt.idx,withdraw=true,deposit=agt.deposit,
+                tick=t,vault=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
                 CSV.write(dataDir*"/"*"bankRunEndogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
                 halt=false
-            #else
+            else
                 #println("No Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
+                reportRow=DataFrame(key=mod.key,agent=agt.idx,withdraw=false,deposit=agt.deposit,
+                tick=t,vault=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
+                CSV.write(dataDir*"/"*"bankRunEndogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
             end
 
             if mod.theBank.vault<=0.0
