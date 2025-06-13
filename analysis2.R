@@ -55,6 +55,10 @@ merge(jointDat,resultDat,by="key") -> finDat
 
 merge(control,finDat,by="key") -> finDat
 
+# check 
+endogenousDat %>% group_by(key) %>% summarise(vault=min(valt)) %>% 
+  transform(fail2=if_else(vault <= 0,TRUE,FALSE)) -> tst
+
 table(finDat$theta,finDat$result)
 
 table(finDat$result)

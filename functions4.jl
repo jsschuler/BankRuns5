@@ -238,6 +238,7 @@ end
 
 function subModelRun(mod::simModel,agt::Agent,withdrawingAgents::Array{Agent},additionalWithdrawals::Int64)
     # now, we debank the sim version of those neightbors
+    #println("Agent ",agt.idx," sees ",length(withdrawingAgents)," withdrawing agents and anticipates ",additionalWithdrawals," additional withdrawals.")
     for idx in index.(withdrawingAgents)
         # get the agent
         agt=mod.agtList[idx]
@@ -260,8 +261,7 @@ function subModelRun(mod::simModel,agt::Agent,withdrawingAgents::Array{Agent},ad
     #println(agt in mod.agtList
     currAgt=filter(x->x.idx==agt.idx,mod.agtList)[1]
     result=withdraw(mod,currAgt)
-    #println("Agent Deposit was ",agt.deposit)
-    #println("Result: ",result)
+    #println("Agent ",agt.idx," Deposit was ",agt.deposit," with result ", result)
     return (result,result < agt.deposit)
 end
 
@@ -295,16 +295,20 @@ function modelRun(mod::Model)
             #println("Running Agent ",agt.idx)
             # get the neighbors of the agent
             neighbors=neighborList(mod,agt)
+            #println("Agent ",agt.idx," has ",length(neighbors)," neighbors")
             withdrawnNeighbors::Array{Agent}=Agent[]
             for n in neighbors
                 if !n.banked
                     push!(withdrawnNeighbors,n)
                 end
             end
+            #println("Agent ",agt.idx," has ",length(withdrawnNeighbors)," withdrawn neighbors")
             # now calculate the proportion of neighbors that have withdrawn
             propWithdrawn=length(withdrawnNeighbors)/length(neighbors)
+            #println("Prop Withdrawn for Agent ",agt.idx," is ",propWithdrawn)
             # now calculate the count of agents that have withdrawn if this is a random sample
             totalWithdrawn=round(Int64,propWithdrawn*length(mod.agtList))
+            #println("Total Withdrawn for Agent ",agt.idx," is ",totalWithdrawn)
             # now calculate additional withdrawals
             additionalWithdrawals=totalWithdrawn-length(withdrawnNeighbors)
             # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
@@ -328,11 +332,13 @@ function modelRun(mod::Model)
             for el in initWithdrawResults
                 push!(resultsWD,el < agt.deposit)
             end
+            #println("submodel results for agent ",agt.idx," are ",subModResults)
+            #println("initial withdrawal results for agent ",agt.idx," are ",initWithdrawResults)
 
             # now calculate the probability of getting less than its deposit
             # should this be 1-?
-            probLessThanDepositStay=mean(resultsStay)
-            probLessThanDepositWD=mean(resultsWD)
+            probLessThanDepositStay=1-mean(resultsStay)
+            probLessThanDepositWD=1-mean(resultsWD)
             # now if the probability is greater than the threshold, withdraw
             global dataDir
             if probLessThanDepositWD > probLessThanDepositStay || probLessThanDepositWD==0.0
@@ -342,6 +348,8 @@ function modelRun(mod::Model)
                 tick=t,valt=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
                 CSV.write(dataDir*"/"*"bankRunEndogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
                 halt=false
+            #else
+                #println("No Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
             end
 
             if mod.theBank.vault<=0.0
