@@ -19,6 +19,11 @@ function modelGen(key::String,
     for i in 1:agtCnt
         push!(agtList,Agent(i,deposits[i],true))
     end
+
+    agtDF=DataFrame(idx=1:agtCnt,deposit=deposits)
+
+    CSV.write(dataDir*"/"*"agents"*string(workerCore)*".csv",agtDF,writeheader=false,append=true)
+
     bankingList::Array{Agent}=Agent[]
 
     for agt in agtList
