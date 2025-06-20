@@ -316,7 +316,7 @@ function modelRun(mod::Model)
             #println("Total Withdrawn for Agent ",agt.idx," is ",totalWithdrawn)
             # now calculate additional withdrawals
             # How many more agents might withdraw given the presumed number who have?
-            newGeometric=truncated(mod.exogProb,totalWithdrawn,length(mod.agtList)-1))
+            newGeometric=truncated(mod.exogProb,totalWithdrawn,length(mod.agtList)-1)
             totalWithdrawn=rand(newGeometric,depth)
 
             additionalWithdrawals=totalWithdrawn.-length(withdrawnNeighbors)
