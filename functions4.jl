@@ -315,7 +315,11 @@ function modelRun(mod::Model)
             totalWithdrawn=round(Int64,propWithdrawn*length(mod.agtList))
             #println("Total Withdrawn for Agent ",agt.idx," is ",totalWithdrawn)
             # now calculate additional withdrawals
-            additionalWithdrawals=totalWithdrawn-length(withdrawnNeighbors)
+            # How many more agents might withdraw given the presumed number who have?
+            newGeometric=truncated(mod.exogProb,totalWithdrawn,length(mod.agtList)-1))
+            totalWithdrawn=rand(newGeometric,depth)
+
+            additionalWithdrawals=totalWithdrawn.-length(withdrawnNeighbors)
             # Now, run many versions of the sub-model where the neighbors and random k other agents withdraw
             subModResults=[]
             initWithdrawResults=[]
@@ -323,7 +327,7 @@ function modelRun(mod::Model)
             #println("Simulating for agent ",agt.idx)
             for k in 1:depth
                 #println("Simulating for agent ",agt.idx)
-                push!(subModResults,subModelRun((clone(simModel),agt,withdrawnNeighbors,additionalWithdrawals)...))
+                push!(subModResults,subModelRun((clone(simModel),agt,withdrawnNeighbors,additionalWithdrawals[k])...))
                 baseMod=clone(simModel)
                 currAgt=filter(x->x.idx==agt.idx,baseMod.agtList)[1]
                 push!(initWithdrawResults,withdraw(baseMod,currAgt))
