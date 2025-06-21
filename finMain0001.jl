@@ -61,9 +61,9 @@ rowDict=Dict()
 for j in 2:cores
     coreDict[j]=nothing
 end
-workerCore=1
-modelCall()
-exit()
+#workerCore=1
+#modelCall()
+#exit()
 # how many rows do we have in the control file?
 while sum(jointFrame.completed) < size(jointFrame,1)
         for c in keys(coreDict)
