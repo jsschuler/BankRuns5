@@ -44,7 +44,7 @@ nrow(resultDat)
 # now add names
 c("key","agent","exogenous","deposit","tick","vault") -> names(exogenousDat)
 
-c("key","agent","exogenous","deposit","tick","valt","wdProb","stayProb") -> names(endogenousDat)
+c("key","agent","withdraw","deposit","tick","valt","wdProb","stayProb") -> names(endogenousDat)
 
 c("key","result") -> names(resultDat)
 
@@ -63,9 +63,9 @@ round(quantile(agentsDeposits$vaultPortion,c(0,0.01,.05,.25,.5,.75,.95,.99,1)),1
 # plot exogenous vs endogenous withdrawals
 
 exogenousDat %>% group_by(key) %>% summarise(exoCnt=n()) -> exoWD
-endogenousDat %>% group_by(key) %>% summarise(endoCnt=n()) -> endoWD
+endogenousDat %>%  transform(withdraw=(withdraw=="true")) %>% group_by(key) %>% summarise(endoCnt=sum(withdraw)) -> endoWD
 
-merge(exoWD,endoWD,by="key",all.x=TRUE) -> jointDat
+merge(exoWD,endoWD,by="key",all=TRUE) -> jointDat
 jointDat$endoCnt <- coalesce(jointDat$endoCnt,0)
 
 merge(jointDat,resultDat,by="key") -> finDat

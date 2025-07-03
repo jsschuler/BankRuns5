@@ -37,9 +37,9 @@ genSeed=12346572
 Random.seed!(genSeed)
 @everywhere dataDir="../BankRunData"
 # how many model initializations to run?
-seedRun=1
+seedRun=2
 # and how many times to run each initialization?
-runSize=20
+runSize=50
 
 
 #agtCnts=cat(collect(10:10:100),
@@ -48,7 +48,7 @@ runSize=20
 
 agtCnts=[1000]
 #reserveRatio=collect(.05:.05:.2)
-reserveRatio=[.05]
+reserveRatio=[.12,.15,.17,.2]
 #depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
 
 function paretoGen(alpha)
