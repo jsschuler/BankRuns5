@@ -48,7 +48,7 @@ runSize=20
 
 agtCnts=[1000]
 #reserveRatio=collect(.05:.05:.2)
-reserveRatio=[.25]
+reserveRatio=[.05]
 #depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
 
 function paretoGen(alpha)
