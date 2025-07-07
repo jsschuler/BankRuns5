@@ -1,0 +1,117 @@
+ %
+%  untitled
+%
+%  Created by John Schuler on 2016-11-14.
+%  Copyright (c) 2016 __MyCompanyName__. All rights reserved.
+%
+\documentclass[12pt]{article}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+% Use utf-8 encoding for foreign characters
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{figure}
+\usepackage{caption}
+% Setup for fullpage use
+\usepackage{fullpage}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{booktabs}
+\usepackage{tikz}
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+%\usepackage{subfigure}
+
+% More symbols
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{latexsym}
+
+% Surround parts of graphics with box
+\usepackage{boxedminipage}
+\newcommand{\dummyfigure}{\tikz \fill [blue] (0,0) rectangle node [black] {Figure} (2,2);}
+% Package for including code in the document
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+% If you want to generate a toc for each chapter (use with book)
+\usepackage{minitoc}
+
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+\usepackage{natbib}
+\usepackage{wrapfig}
+%\usepackage[numbers]{natbib}
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+%\ifpdf
+%\usepackage[pdftex]{graphicx}
+%\else
+%\usepackage{graphicx}
+%\fi
+\title{A Bank Run Model for the Twentieth Century}
+\author{John S. Schuler \\ Department of Computational and Data Sciences \\ George Mason University}
+
+\date{\today}
+\usepackage{setspace}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+\begin{abstract}
+	Diamond and Dybvig 1983 is a now classic model of banking failure. This model and the considerable ancilliary literature studies two equilibria: the ``good'' equilibrium of bank stability and the ``bad'' equilibrium of bank failure. A major limitation of these models is that while they acknowledge the fact of these two equilibria, they are silent on how a system in the desired equilibrium suddenly moves into the run equilibrium. This paper reconsiders the classic Diamond-Dybvig model as a stochastic process and highlights a serious limitation. The paper then offers a simple replacement model as a basis on which to build more modern models of financial instability. 
+\end{abstract}
+\begin{doublespace}
+\section{Introduction}
+\section*{Introduction}
+The Diamond--Dybvig model, \citet{diamond1983bank} is a classic model of bank runs and often cited as a justification for government deposit insurance. Bank runs are an obvious example of the economic
+problem of self-fulfilling prophecies and present major external costs. Further, the Diamond-
+Dybvig model is often used as an argument for “inherent bank fragility” \citet{white1999theory}.
+A core challenge of banking is that agents wish to lend short and borrow long. This is only possible if some entity is
+willing to take the other side of this deal and to pool and manage the correponding risk. For the purpose of this paper, I will
+focus on a single bank in isolation. Thus, distinctions such as illiquidity vs insolvency are not relevant  as the bank has no assets aside from deposits and the only risk is default. This means that the actual probabilities of failure produced by this model are not realistic nor are intended to be so; rather, the mechanism is the object of interest.
+ A core concern in fractional-reserve banking is that of the self-fulflling prophecy. In principle, all fractional reserve banks are prone to runs since the mere belief that a bank
+is in danger can render it so. This speaks to the potential psychological elements in bank runs. As discussed by John Kenneth Galbraith,
+so long as depositors believe they can get their money, the don’t want it \citet{galbraith2017money}.
+ This psychological element fits uncomfortably with traditional economic conceptions of agents. On the other hand, this
+can be taken as a simple fact of agent behavior and so modeled. To the extent this is so,
+techniques based on Von-Neumann- Morgenstern expected utility are not the best modeling
+tool for this purpose. Since the starting point is the Diamond-Dybvig model, the question then is to what extent do bank runs happen with rational agents? A useful tool for demonstrating this is agent-based modeling since it forces direct modeling of agent behavior without any aggregation. I will ``agentize'' the Diamond-Dybvig model to understand it better.
+For completeness, the following section is a description of the classic model and the subsequent literature.
+\section{The Diamond-Dybvig Model and Subsequent Literature}
+
+For simplicity, I will follow the presentation in \citet{white1999theory} which is slightly simplified but covers the essentials.
+The model contains three time periods. Agents have deposits. The bank has access to a production technology that will mature at $t=3$. However, there are two
+types of agents. ``Type 1'' agents are not able to wait until $t=3$. Agents do not know which type they are and wish to pool the risk of being type 1. Thus, the
+Diamond-Dybvig ``bank'' refers to an arrangement where depositors receive their deposit + an insurance payment upon withdrawal at $t=2$ and agents that wait until
+$t=3$ are residual claimants and split the return on investment. The bank makes payments on a first-come-first-serve basis. Now since the investment pay out is greater than the insurance pay out, all agents prefer to wait until $t=3$ \emph{at least provided all other agents do so as well}. At $t=2$, agents find out which type they are and these agents withdraw. The risk is that these withdrawals deplete the quantity invested and alter the calculation for all other agents.
+
+Thus, Diamond and Dybvig show there are two equilibria. In one equilibrium, all type 1 agents and possibly some type 2 agents withdraw. The remaining agents consume their return at $t=3$. In the other equilibrium, all type 2 agents also withdraw early because the potential insurance payment exceeds the return on investment for the remaining deposits. The bank cannot tell the two types apart and so cannot deny service to type 2 agents. The ``bad'' equilibriums stems from the fact that if all other agents are withdrawing early,
+it is rational for an agent to withdraw.
+
+\citet{diamond1983bank} inspired an enormous amount of literature. Here, the goal is to consider the most directly relevant. Thus, the focus is on actual models of bank runs rather than either broader macroeconomic models or policy questions involving moral hazard. For simplified presentations of the model itself, see both \citet{diamond2007banks} and the aforementioned \citet{white1999theory}. The inevitably equilibrial nature of the Diamond-Dybvig will become important later. This is discussed in \citet{postlewaite1987bank} where it is shown there exists a unique equilibrium where a bank run exists with a positive probability. This will turn out to be consistent with the model offered below. Relatedly, \citet{shelldiamond} points out that the Diamond--Dybvig equilibrium is \emph{not Walrasian}. The same paper extends the classical model to account for depositor's beliefs about run probability. This extension also is consistent with the model offered below. The authors further point out that the best contract is predicated upon the assumption that bank runs cannot occur. Here they follow \citet{ennis2010fundamental}. A paper also related to this one is \citet{kinateder2014sequential} which actually attempts to model the sequential aspect of the Diamond--Dybvig decision-making. They show that there does exist a run-proof equilibrium assuming agents have complete knowledge of the history of deposit decisions. In \citet{green2000diamond}, the authors show that there is an efficient ex ante equilibrium in a Diamond--Dybvig setup. Also relevant here is their discussion of a three agent model where the behavior of an agent depends on the behavior of a previous agent. This is an important step in an agent-based direction and thus, the model presented below could be considered an extension of this model also. Another generalization of these results appears in \citet{andolfatto2007role} which shows that a truth telling equilibrium is the only equilibrium. This comment is interesting and will not be addressed in the present model. Following the criticisms in \citet{white1999theory}, \citet{peck2003equilibrium} allow partial of full suspension of withdrawal. They further emphasize that runs can occur even under the optimal contract. Generalizing these three approaches, \citet{nosal2009information} discusses what kind of information may be shared among agents and considers bank runs a planning problem. Given the nature of the relationship between depositors and bankers, it is useful to ask then, who is the planner? \citet{peck2019diamond} attempt to extend the Diamond--Dybvig model to allow for endogenous deposits; an approach followed below. Far and away the biggest step in the direction of the model offered below is an evolutionary game theory model found in \citet{smith2014runs}.
+
+\citet{white1999theory} criticized DD from a price theoretic point of view.
+Firstly, the investment is an odd hybrid of debt and equity. This will become important later.
+The bank has no separate class of equity holders which can insulate depositors from losses. Its total debts always exceed its equity.
+This is relevant as there are actual historical examples of bank failures where all depositors were paid in full.
+Real world banks can suspend note redemption. In the real world, this may or may not interfere with consumption but in the Diamond--Dybvig it must.
+
+\section{A Stochastic Process Version of Diamond-Dybvig}
+The model contains $k$ identical agents with endowments of 100 for computational simplicity. Each agent is risk neutral with logarithmic utility. 
+The bank has a production technology that matures at $t=3$. 
+
+
+\end{doublespace}
+
+
+
+\end{document}

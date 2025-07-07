@@ -1,0 +1,78 @@
+ %
+%  untitled
+%
+%  Created by John Schuler on 2016-11-14.
+%  Copyright (c) 2016 __MyCompanyName__. All rights reserved.
+%
+\documentclass[12pt]{article}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+% Use utf-8 encoding for foreign characters
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{figure}
+\usepackage{caption}
+% Setup for fullpage use
+\usepackage{fullpage}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{booktabs}
+\usepackage{tikz}
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+%\usepackage{subfigure}
+
+% More symbols
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{latexsym}
+
+% Surround parts of graphics with box
+\usepackage{boxedminipage}
+\newcommand{\dummyfigure}{\tikz \fill [blue] (0,0) rectangle node [black] {Figure} (2,2);}
+% Package for including code in the document
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+% If you want to generate a toc for each chapter (use with book)
+\usepackage{minitoc}
+
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+\usepackage{natbib}
+\usepackage{wrapfig}
+%\usepackage[numbers]{natbib}
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+%\ifpdf
+%\usepackage[pdftex]{graphicx}
+%\else
+%\usepackage{graphicx}
+%\fi
+\title{A Bank Run Model for the Twentieth Century}
+\author{John S. Schuler \\ Department of Computational and Data Sciences \\ George Mason University}
+
+\date{\today}
+\usepackage{setspace}
+\usepackage{Sweave}
+\begin{document}
+\input{draft-concordance}
+\maketitle
+\begin{abstract}
+	Diamond and Dybvig 1983 is a now classic model of banking failure. This model and the considerable ancilliary literature studies two equilibria: the ``good'' equilibrium of bank stability and the ``bad'' equilibrium of bank failure. A major limitation of these models is that while they acknowledge the fact of these two equilibria, they are silent on how a system in the desired equilibrium suddenly moves into the run equilibrium. Agentization refers to the process of taking usually classic models, economic or otherwise, and representing them in agent-based simulations that hopefully reproduce those model's central features. I consider an agentized Diamond-Dybvig model that reveals some major conceptual limitations in Diamond-Dybvig that limits its utility as the foundation of agent-based studies of bank runs. Then I present an alternative bank run model that may provide such a basis not only for the study of bank runs but also for broader models of financial contagion.
+\end{abstract}
+\begin{doublespace}
+\end{doublespace}
+
+
+
+\end{document}
