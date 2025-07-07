@@ -11,7 +11,7 @@ using Graphs
 # we need a function that turns an array of tuples into a matrix
 
 
-dataSource="../BankRunData/"
+dataSource="../BankRunDataBig/"
 tst= jldopen(dataSource, "r")
 jointFrame=tst["single_stored_object"]
 
@@ -58,3 +58,4 @@ CSV.write("../bankRunData/supplemental.csv",finFrame,writeheader=true,append=fal
 #clusteringCoeff=clustering_coefficient.(jointFrame.network) # clustering coefficient
 #triangles=triangle_count.(jointFrame.network) # triangle count
 
+#key123465722025-07-03T14:44:17.037.jld2

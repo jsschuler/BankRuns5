@@ -88,4 +88,4 @@ save_object("../BankRunData/key"*string(genSeed)*string(Dates.now())*".jld2", jo
 println(jointFrame)
 # subset to 16 rows
 #jointFrame=jointFrame[1:30,:]
-CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame[:,[:key,:started,:completed]],writeheader=true,append=false)
+CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,writeheader=true,append=false)
