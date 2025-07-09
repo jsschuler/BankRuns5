@@ -89,3 +89,9 @@ println(jointFrame)
 # subset to 16 rows
 #jointFrame=jointFrame[1:30,:]
 CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,writeheader=true,append=false)
+logNormal=DataFrame(params.(jointFrame.depositDist))
+rename!(logNormal,:1 => :mu,:2 => :sigma)
+CSV.write(dataDir*"/"*"bankRunlogNormal.csv",logNormal,writeheader=true,append=false)
+geometric=DataFrame(params.(jointFrame.withdrawRV))
+rename!(geometric,:1 => :p,:2 => :s0,:3 => :s1)
+CSV.write(dataDir*"/"*"bankRunGeometric.csv",geometric,writeheader=true,append=false)
