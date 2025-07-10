@@ -5,6 +5,15 @@
 #               John S. Schuler                                                #
 #               Main Control Code                                              #
 ################################################################################
+using Pkg
+Pkg.activate("..")
+Pkg.instantiate()
+using Distributed
+@everywhere begin
+    import Pkg
+    Pkg.activate("..")  # Must be absolute
+    using Random  # Now it will be found
+end
 using Distributed
 @everywhere using Distributions
 @everywhere using Random
