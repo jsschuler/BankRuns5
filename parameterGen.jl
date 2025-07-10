@@ -84,7 +84,7 @@ jointFrame.seed2=sample(1:1000000,size(jointFrame,1),replace=false)
 jointFrame.key=string(Dates.now())*"-".*string.(jointFrame.seed1).*"-".*string.(jointFrame.seed2)
 jointFrame.started.=false
 jointFrame.completed.=false
-save_object("../BankRunData/key"*string(genSeed)*string(Dates.now())*".jld2", jointFrame)
+save_object(dataDir*"/key"*string(genSeed)*string(Dates.now())*".jld2", jointFrame)
 println(jointFrame)
 # subset to 16 rows
 #jointFrame=jointFrame[1:30,:]
