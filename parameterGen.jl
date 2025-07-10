@@ -35,7 +35,7 @@
 
 genSeed=12346572
 Random.seed!(genSeed)
-@everywhere dataDir="~"
+@everywhere dataDir="/home/jsschuler"
 # how many model initializations to run?
 seedRun=2
 # and how many times to run each initialization?
