@@ -88,7 +88,7 @@ save_object(dataDir*"/key"*string(genSeed)*string(Dates.now())*".jld2", jointFra
 println(jointFrame)
 # subset to 16 rows
 #jointFrame=jointFrame[1:30,:]
-CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame,writeheader=true,append=false)
+CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame[:,[:seed1,:iteration,:graphParams1,:graphParams2,:reserveRatio,:depositInsuranceQuantile,:seed2,:key]],writeheader=true,append=false)
 logNormal=DataFrame(params.(jointFrame.depositDist))
 rename!(logNormal,:1 => :mu,:2 => :sigma)
 CSV.write(dataDir*"/"*"bankRunlogNormal.csv",logNormal,writeheader=true,append=false)
