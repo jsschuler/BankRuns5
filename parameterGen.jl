@@ -62,7 +62,7 @@ end
 #depositDistributions=paretoGen.(collect(.5:.5:2.5))
 #depositDistributions=logNormalGen.([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],collect(1:1:10))
 depositDistributions=[LogNormal(1.0, 2.0)]
-depositInsuranceQuantile=[-.2]
+depositInsuranceQuantile=[.3]
 graphParams1=[10,20,50,500,1000]
 graphParams2=[.3, .3, .3, .3, 0.0]
 graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .3),newman_watts_strogatz(1000, 20, .3),newman_watts_strogatz(1000, 50, .3),newman_watts_strogatz(1000, 500, .3),newman_watts_strogatz(1000, 999, 0.0)]
@@ -88,10 +88,10 @@ save_object(dataDir*"/key"*string(genSeed)*string(Dates.now())*".jld2", jointFra
 println(jointFrame)
 # subset to 16 rows
 #jointFrame=jointFrame[1:30,:]
-CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame[:,[:seed1,:iteration,:graphParams1,:graphParams2,:reserveRatio,:depositInsuranceQuantile,:seed2,:key]],writeheader=true,append=false)
+CSV.write(dataDir*"/"*"bankRunParametersInit.csv",jointFrame[:,[:seed1,:iteration,:graphParams1,:graphParams2,:reserveRatio,:depositInsuranceQuantile,:seed2,:key]],writeheader=true,append=true)
 logNormal=DataFrame(params.(jointFrame.depositDist))
 rename!(logNormal,:1 => :mu,:2 => :sigma)
-CSV.write(dataDir*"/"*"bankRunlogNormal.csv",logNormal,writeheader=true,append=false)
+CSV.write(dataDir*"/"*"bankRunlogNormal.csv",logNormal,writeheader=true,append=true)
 geometric=DataFrame(params.(jointFrame.withdrawRV))
 rename!(geometric,:1 => :p,:2 => :s0,:3 => :s1)
-CSV.write(dataDir*"/"*"bankRunGeometric.csv",geometric,writeheader=true,append=false)
+CSV.write(dataDir*"/"*"bankRunGeometric.csv",geometric,writeheader=true,append=true)
