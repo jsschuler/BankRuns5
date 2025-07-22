@@ -63,8 +63,9 @@
 
 \date{\today}
 \usepackage{setspace}
+\usepackage{Sweave}
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+\input{draft-concordance}
 \maketitle
 \begin{abstract}
 	Diamond and Dybvig 1983 is a now classic model of banking failure. This model and the considerable ancilliary literature studies two equilibria: the ``good'' equilibrium of bank stability and the ``bad'' equilibrium of bank failure. A major limitation of these models is that while they acknowledge the fact of these two equilibria, they are silent on how a system in the desired equilibrium suddenly moves into the run equilibrium. This paper reconsiders the classic Diamond-Dybvig model as a stochastic process and highlights a serious limitation. The paper then offers a simple replacement model as a basis on which to build more modern models of financial instability. 
@@ -148,21 +149,6 @@ to bank run situations, the model does not explain how a bank in the
 
 \section{Bank Runs Revisited}
 
-A new approach is required. Instead of starting with equilibria, we can focus on
-the marginal behavior of agents. Let us recall the basic purpose of banking. 
-Agents want to borrow long and lend short. Banks are institutions that take the 
-other side of this transaction. Now, an agent will withdraw funds from a bank if 
-the agent fears inability to do so. Under the assumption the bank is able to pay,
-the opportunity cost of withdraawal is foregone interest for the period the agent
-holds wealth in cash. This is generally small relative to the total deposit even
-for small depositors so a simple-as-possible first pass model may ignore interest
-payments. Also, sun-spot bank runs are likely analytically different from fundamentals-driven
-bank failures so we will focus on the former. Further, the 2023 collapse of 
-Silicon Valley Bank, among others, strongly suggests that social networks play
-a role in bank runs. Social networks alone imply agent heterogeneity and thus,
-a stochastic process model with a representative agent is no sufficient. 
-Instead, we will build a full agent-based model. 
-
 % instead of focusing on equilibria, return to the marginal decision
 % If an agent fears a bank is about to fail, the cost of unncessary withdrawal
 % is foregone interest payments which is small relative to the cost of total or
@@ -171,35 +157,10 @@ Instead, we will build a full agent-based model.
 % instead, let agents have a withdrawal threshold probability
 
 % Silicon Valley bank shows that social networks matter
-% thus, an agent-based model is required for 21st century bank run models. 
+% thus, an agent-based model is required for 21st centure bank run models. 
 
 \section{A Simple Replacement Model}
-An agent-based model inevitable forces the explicit modeling of marginal behavior
-as opposed to limiting the analysis to equilibria. As previously mentioned, 
-foregone interest payments are small relative to the total deposit and so may
-be ignored as a first pass. Additionally, agents are primarily concerned with 
-whether or not they can access the entirety of their deposits. Thus, we have no 
-need of full Von-Neumann-Morgenstern utility functions. Agents will withdraw 
-when the probability of them getting their deposit back in full upon immediate 
-withdrawal exceeds their probability of getting it.
 \subsection{Model Description}
-
-% agents
-% agents have a deposit threshold probability
-% and are connected in a network representing their information set
-% this network is a Watts-Strogatz small world network
-% agent deposits are distributed log-normally. 
-
-\subsubsection{The Agents}
-The model contains 1000 agents. Each agent has a deposit drawn from a log-normal
-distribution. The agents are connected in a Watts-Strogatz small world network. 
-Each agent has a withdrawal threshold probability
-
-% withdrawals
-% some agents withdraw exogenously. This is governed by a truncated geometric
-% distribution. Thus, it is approximately memoryless. 
-
-
 \subsection{Model Results}
 
 \subsection{Deposit Insurance and Policy Implications}
