@@ -48,7 +48,7 @@ runSize=50
 
 agtCnts=[1000]
 #reserveRatio=collect(.05:.05:.2)
-reserveRatio=[.12,.15,.17,.2]
+reserveRatio=[.12,.125,.13,.135,.14,.145,.15]
 #depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
 
 function paretoGen(alpha)
@@ -62,7 +62,7 @@ end
 #depositDistributions=paretoGen.(collect(.5:.5:2.5))
 #depositDistributions=logNormalGen.([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],collect(1:1:10))
 depositDistributions=[LogNormal(1.0, 2.0)]
-depositInsuranceQuantile=[-.3]
+depositInsuranceQuantile=[0.0]
 graphParams1=[10,20,50,500,1000]
 graphParams2=[.3, .3, .3, .3, 0.0]
 graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .3),newman_watts_strogatz(1000, 20, .3),newman_watts_strogatz(1000, 50, .3),newman_watts_strogatz(1000, 500, .3),newman_watts_strogatz(1000, 999, 0.0)]
