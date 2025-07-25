@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  17 JUL 2025 10:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  23 JUL 2025 10:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -917,11 +917,13 @@ i-ble out-comes are: $[] []$
 
 [5]
 
-[6] (./draft.bbl
+[6]
 
-[7]
+[7] (./draft.bbl
 
-[8])
+[8]
+
+[9])
 Package minitoc Info: I0009
 (minitoc)             Listing minitoc auxiliary files. 
 (minitoc)             Creating the draft.maf file.
@@ -940,7 +942,7 @@ Package minitoc(hints) Warning: W0024
 
 
 
-[9] (./draft.aux)
+[10] (./draft.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -949,11 +951,11 @@ L3 programming layer <2025-01-18>
 Here is how much of TeX's memory you used:
  20096 strings out of 473190
  385801 string characters out of 5704335
- 739073 words of memory out of 5000000
+ 739075 words of memory out of 5000000
  42998 multiletter control sequences out of 15000+600000
  573717 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 102i,7n,107p,2862b,266s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 102i,7n,107p,2862b,268s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmex10.pfb></opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmmi12.pfb></opt/homebrew/Cellar/texlive/20250
@@ -976,10 +978,10 @@ dist/fonts/type1/public/cm-super/sfrm1200.pfb></opt/homebrew/Cellar/texlive/202
 w/Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/public/cm-super/sfrm20
 74.pfb></opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/pu
 blic/cm-super/sfti1200.pfb>
-Output written on draft.pdf (9 pages, 269359 bytes).
+Output written on draft.pdf (10 pages, 273162 bytes).
 PDF statistics:
- 124 PDF objects out of 1000 (max. 8388607)
- 77 compressed objects within 1 object stream
+ 127 PDF objects out of 1000 (max. 8388607)
+ 79 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  17 words of extra memory for PDF output out of 10000 (max. 10000000)
 
