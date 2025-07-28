@@ -10,14 +10,13 @@ end
 
 # now read these files which contain dataframes and stack them
 # call the stack jointFrame
-if !isempty(jld2_files)
-    global jointFrame::DataFrame
-    jointFrame = DataFrame()
-    for file in jld2_files
-        df = load_object(file)
-        jointFrame = vcat(jointFrame, df)
-    end     
-end
+
+jointFrame = DataFrame()
+for file in jld2_files
+    df = load_object(file)
+    jointFrame = vcat(jointFrame, df)
+end     
+
 
 # now, load all completed models at paths which contain the string "bankRunResults"
 completed_files = readdir(dataDir, join=true)
