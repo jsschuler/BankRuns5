@@ -78,3 +78,6 @@ end
 for key in completed_models.key
     jointFrame[jointFrame.key .== key, :completed] .= true
 end
+
+println("Completed models updated in jointFrame.")
+println(sum(jointFrame.completed), " models completed out of ", size(jointFrame, 1), " total.")
