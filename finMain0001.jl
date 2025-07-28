@@ -66,17 +66,16 @@ sleep(5)
 
 # bring in the parameter generation code
 # define jointFrame to keep global scope
-jointFrame=DataFrame()
+#jointFrame=DataFrame()
 # check if there is a jld2 file in the data directory
-jld2_files = readdir(dataDir, join=true)
-jld2_files = filter(file -> occursin(".jld2", file), jld2_files)
-if isempty(jld2_files)
-    # if there are no jld2 files, we need to generate the parameters
-    @everywhere include("parameterGen.jl")
-else
-    # if there are jld2 files, we need to load the parameters
-    @everywhere include("restart.jl")
-end
+#jld2_files = readdir(dataDir, join=true)
+#jld2_files = filter(file -> occursin(".jld2", file), jld2_files)
+#if isempty(jld2_files)
+# if there are no jld2 files, we need to generate the parameters
+#@everywhere include("parameterGen.jl")
+# if there are jld2 files, we need to load the parameters
+@everywhere include("restart.jl")
+
 
 
 
