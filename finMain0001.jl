@@ -65,7 +65,8 @@ sleep(5)
 # If this is a fresh run, run the parameter generation code
 
 # bring in the parameter generation code
-
+# define jointFrame to keep global scope
+jointFrame=DataFrame()
 # check if there is a jld2 file in the data directory
 jld2_files = readdir(dataDir, join=true)
 jld2_files = filter(file -> occursin(".jld2", file), jld2_files)
