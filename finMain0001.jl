@@ -61,7 +61,7 @@ sleep(5)
 
 # first, check if there are any jld2 files in the data directory
 @everywhere dataDir="/scratch/jschule4"
-@everywhere dataDir="/Users/l25-n05917-res/ResearchCode/BankRunDataNew"
+#@everywhere dataDir="/Users/l25-n05917-res/ResearchCode/BankRunDataNew"
 # If this is a fresh run, run the parameter generation code
 
 # bring in the parameter generation code
