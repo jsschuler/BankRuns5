@@ -50,7 +50,7 @@ agtCnts=[1000]
 #reserveRatio=collect(.05:.05:.2)
 #reserveRatio=[.12,.125,.13,.135,.14,.145,.15]
 #depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
-reserveRatio=[.12,.125] 
+reserveRatio=[.13,.135] 
 function paretoGen(alpha)
     return Pareto(alpha,10)
 end
