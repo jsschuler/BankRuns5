@@ -37,9 +37,9 @@ genSeed=12346572
 Random.seed!(genSeed)
 
 # how many model initializations to run?
-seedRun=2
+seedRun=5
 # and how many times to run each initialization?
-runSize=50
+runSize=10
 
 
 #agtCnts=cat(collect(10:10:100),
@@ -48,9 +48,9 @@ runSize=50
 
 agtCnts=[1000]
 #reserveRatio=collect(.05:.05:.2)
-reserveRatio=[.12,.125,.13,.135,.14,.145,.15]
+#reserveRatio=[.12,.125,.13,.135,.14,.145,.15]
 #depositDistributions=Distribution[Pareto(.5,10),Pareto(1.0,10),Pareto(1.5,10),Pareto(2.0,10),Pareto(2.5,10)]
-
+reserveRatio=[.12,.125] 
 function paretoGen(alpha)
     return Pareto(alpha,10)
 end
@@ -62,10 +62,10 @@ end
 #depositDistributions=paretoGen.(collect(.5:.5:2.5))
 #depositDistributions=logNormalGen.([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],collect(1:1:10))
 depositDistributions=[LogNormal(1.0, 2.0)]
-depositInsuranceQuantile=[-0.3]
-graphParams1=[10,20,50,500,1000]
-graphParams2=[.3, .3, .3, .3, 0.0]
-graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 10, .3),newman_watts_strogatz(1000, 20, .3),newman_watts_strogatz(1000, 50, .3),newman_watts_strogatz(1000, 500, .3),newman_watts_strogatz(1000, 999, 0.0)]
+depositInsuranceQuantile=[0,.5,.9]
+graphParams1=[1000]
+graphParams2=[0.0]
+graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 999, 0.0)]
 
 #exogenousProb=Distribution[Binomial(1000,0.1),Binomial(1000,.2),Binomial(1000,.3)]
 exogenousProb=Distribution[truncated(Geometric(0.1),0,1000)]

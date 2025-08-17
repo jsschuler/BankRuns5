@@ -3,10 +3,11 @@ library(data.table)
 
 # list all files
 
-setwd("~/ResearchCode/BankRunData")
+setwd("~/ResearchCode/BankRunDataPartial")
 
 # first read in control file
 read.csv("bankRunParametersInit.csv") -> control
+names(control) <- c("seed1","iteration","graphParams1","graphParams2","reserveRatio","depositInsuranceQuantile","seed2","key")
 #read.csv("supplemental.csv") -> auxil
 
 #merge(control,auxil,by="key") -> control

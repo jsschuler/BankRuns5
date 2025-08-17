@@ -144,10 +144,8 @@ These results reveal some limitations in the Diamond-Dybvig framework. When agen
 decide whether or not to bank, they are not primarily saving or investing but 
 rather \emph{buying an option}. The main outcome is driven by the insurance 
 payout which is an artifact of the model and not a property of real world banking.
-While the Diamond-Dybvig model yields two equilibria which appear to correspond 
-to bank run situations, the model does not explain how a bank in the 
-``good'' equilibrium can suddenly move to the ``bad'' equilibrium. 
-
+While the Diamond-Dybvig model yields two equilibria one of which appears to correspond 
+to a bank run, the model does not 
 
 
 \section{Bank Runs Revisited}

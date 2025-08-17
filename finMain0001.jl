@@ -72,9 +72,9 @@ sleep(5)
 #jld2_files = filter(file -> occursin(".jld2", file), jld2_files)
 #if isempty(jld2_files)
 # if there are no jld2 files, we need to generate the parameters
-#@everywhere include("parameterGen.jl")
+@everywhere include("parameterGen.jl")
 # if there are jld2 files, we need to load the parameters
-@everywhere include("restart.jl")
+#@everywhere include("restart.jl")
 
 
 
