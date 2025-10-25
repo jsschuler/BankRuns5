@@ -33,7 +33,7 @@
 # and a vector of the needed parameters for each
 # GRAPHS for each graph, a and b in (0,1)
 
-genSeed=12346572
+genSeed=568473
 Random.seed!(genSeed)
 
 # how many model initializations to run?
