@@ -56,6 +56,10 @@ reserveRatio=parse(Float64, CLI_ARGS[3])
 # now we need the deposit insurance quantile
 depQuantile=parse(Float64, CLI_ARGS[4])
 
+# Watts-Strogatz network parameters
+ws_k=parse(Int, CLI_ARGS[8])
+ws_p=parse(Float64, CLI_ARGS[9])
+
 function paretoGen(alpha)
     return Pareto(alpha,10)
 end
@@ -82,9 +86,9 @@ end
 depositDistributions=[depDist]
 depositInsuranceQuantile=[depQuantile]
 # For now we run a single fixed network per sweep (change here to vary networks).
-graphParams1=[1000]
-graphParams2=[0.0]
-graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(1000, 999, 0.0)]
+graphParams1=[ws_k]
+graphParams2=[ws_p]
+graphTypes=SimpleGraph{Int64}[newman_watts_strogatz(agtCnts[1], ws_k, ws_p)]
 
 #exogenousProb=Distribution[Binomial(1000,0.1),Binomial(1000,.2),Binomial(1000,.3)]
 exogenousProb=Distribution[truncated(Geometric(0.1),0,1000)]

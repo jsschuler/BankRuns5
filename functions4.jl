@@ -308,12 +308,25 @@ function modelRun(mod::Model)
             end
             #println("Agent ",agt.idx," has ",length(withdrawnNeighbors)," withdrawn neighbors")
             # now calculate the proportion of neighbors that have withdrawn
-            propWithdrawn=length(withdrawnNeighbors)/length(neighbors)
+            propWithdrawn = isempty(neighbors) ? 0.0 : (length(withdrawnNeighbors) / length(neighbors))
             #println("Prop Withdrawn for Agent ",agt.idx," is ",propWithdrawn)
             # Infer total withdrawals in population from neighbor sample.
             totalWithdrawn=round(Int64,propWithdrawn*length(mod.agtList))
             #println("Total Withdrawn for Agent ",agt.idx," is ",totalWithdrawn)
             # Draw possible total withdrawals and convert to additional (endogenous) count.
+            totalWithdrawnRaw = totalWithdrawn
+            totalWithdrawn = clamp(totalWithdrawn, 0, length(mod.agtList)-1)
+            if totalWithdrawn != totalWithdrawnRaw
+                println(
+                    "Clamp triggered. key=", mod.key,
+                    " totalWithdrawnRaw=", totalWithdrawnRaw,
+                    " totalWithdrawn=", totalWithdrawn,
+                    " N=", length(mod.agtList),
+                    " neighbors=", length(neighbors),
+                    " withdrawnNeighbors=", length(withdrawnNeighbors),
+                    " propWithdrawn=", propWithdrawn
+                )
+            end
             newGeometric=truncated(mod.exogProb,totalWithdrawn,length(mod.agtList)-1)
             totalWithdrawn=rand(newGeometric,depth)
 
