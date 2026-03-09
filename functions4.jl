@@ -344,11 +344,15 @@ function modelRun(mod::Model)
                 currAgt=filter(x->x.idx==agt.idx,baseMod.agtList)[1]
                 push!(initWithdrawResults,withdraw(baseMod,currAgt))
             end
-            # now, have the agent calculate its probability of getting less than its deposit
+            # Compute P(full deposit | withdraw now) and P(full deposit | stay).
+            # resultsStay[k] is true when the agent got less than their deposit in sub-model k
+            # (i.e. they lost money by waiting), so 1 - mean gives P(full deposit | stay).
             resultsStay::Array{Bool}=Bool[]
             for el in subModResults
                 push!(resultsStay,el[2])
             end
+            # resultsWD[k] is true when the agent got less than their deposit by withdrawing
+            # immediately in run k, so 1 - mean gives P(full deposit | withdraw now).
             resultsWD::Array{Bool}=Bool[]
             for el in initWithdrawResults
                 push!(resultsWD,el < agt.deposit)
@@ -356,23 +360,27 @@ function modelRun(mod::Model)
             #println("submodel results for agent ",agt.idx," are ",subModResults)
             #println("initial withdrawal results for agent ",agt.idx," are ",initWithdrawResults)
 
-            # now calculate the probability of getting less than its deposit
-            # should this be 1-?
-            probLessThanDepositStay=1-mean(resultsStay)
-            probLessThanDepositWD=1-mean(resultsWD)
-            # now if the probability is greater than the threshold, withdraw
+            # P(full deposit | stay): agent waits while neighbors and additional anticipated
+            # withdrawals clear first, then collects. Vault only decreases, so this is weakly
+            # dominated by withdrawing now.
+            probFullDepositStay=1-mean(resultsStay)
+            # P(full deposit | withdraw now): agent goes to the front of the queue immediately.
+            probFullDepositWD=1-mean(resultsWD)
+            # Withdraw if immediate withdrawal is strictly safer, or if the bank has already
+            # failed (probFullDepositWD == 0.0 implies probFullDepositStay == 0.0 by dominance,
+            # so the agent withdraws to claim whatever vault or deposit insurance remains).
             global dataDir
-            if probLessThanDepositWD > probLessThanDepositStay || probLessThanDepositWD==0.0
-                #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
+            if probFullDepositWD > probFullDepositStay || probFullDepositWD==0.0
+                #println("Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probFullDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probFullDepositStay, " at tick=",t)
                 withdraw(mod,agt)
                 reportRow=DataFrame(key=mod.key,agent=agt.idx,withdraw=true,deposit=agt.deposit,
-                tick=t,vault=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
+                tick=t,vault=mod.theBank.vault,wdProb=probFullDepositWD,stayProb=probFullDepositStay)
                 CSV.write(dataDir*"/"*"bankRunEndogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
                 halt=false
             else
-                #println("No Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probLessThanDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probLessThanDepositStay, " at tick=",t)
+                #println("No Endogenous Withdawal Agent ",agt.idx," at p(WD)=",probFullDepositWD, " where deposit was ",agt.deposit," and vault was ",mod.theBank.vault," and P(Stay)=",probFullDepositStay, " at tick=",t)
                 reportRow=DataFrame(key=mod.key,agent=agt.idx,withdraw=false,deposit=agt.deposit,
-                tick=t,vault=mod.theBank.vault,wdProb=probLessThanDepositWD,stayProb=probLessThanDepositStay)
+                tick=t,vault=mod.theBank.vault,wdProb=probFullDepositWD,stayProb=probFullDepositStay)
                 CSV.write(dataDir*"/"*"bankRunEndogenous"*string(workerCore)*".csv",reportRow,writeheader=false,append=true)
             end
 
